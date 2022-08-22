@@ -22,23 +22,60 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface AlchemistNFTInterface extends ethers.utils.Interface {
   functions: {
     "Alchemist()": FunctionFragment;
+    "DAI()": FunctionFragment;
+    "Jpeg()": FunctionFragment;
+    "NFTWrapper()": FunctionFragment;
+    "curveData()": FunctionFragment;
+    "lockNft(address,uint256,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "pUsd()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "Alchemist", values?: undefined): string;
+  encodeFunctionData(functionFragment: "DAI", values?: undefined): string;
+  encodeFunctionData(functionFragment: "Jpeg", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "NFTWrapper",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "curveData", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "lockNft",
+    values: [string, BigNumberish, string, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
     values: [string, string, BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "pUsd", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "Alchemist", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "Jpeg", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "NFTWrapper", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "curveData", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "lockNft", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "pUsd", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "Initialized(address,address,address,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
 }
+
+export type InitializedEvent = TypedEvent<
+  [string, string, string, string] & {
+    Alchemist: string;
+    NFTWrapper: string;
+    Jpeg: string;
+    Curve: string;
+  }
+>;
 
 export class AlchemistNFT extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -86,6 +123,32 @@ export class AlchemistNFT extends BaseContract {
   functions: {
     Alchemist(overrides?: CallOverrides): Promise<[string]>;
 
+    DAI(overrides?: CallOverrides): Promise<[string]>;
+
+    Jpeg(overrides?: CallOverrides): Promise<[string]>;
+
+    NFTWrapper(overrides?: CallOverrides): Promise<[string]>;
+
+    curveData(
+      overrides?: CallOverrides
+    ): Promise<
+      [string, number, number, number, number] & {
+        Curve: string;
+        usdtIndex: number;
+        usdcIndex: number;
+        daiIndex: number;
+        pUsdIndex: number;
+      }
+    >;
+
+    lockNft(
+      _nft: string,
+      _nftId: BigNumberish,
+      swap: string,
+      amountToBorrow: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     onERC721Received(
       arg0: string,
       arg1: string,
@@ -93,9 +156,37 @@ export class AlchemistNFT extends BaseContract {
       arg3: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    pUsd(overrides?: CallOverrides): Promise<[string]>;
   };
 
   Alchemist(overrides?: CallOverrides): Promise<string>;
+
+  DAI(overrides?: CallOverrides): Promise<string>;
+
+  Jpeg(overrides?: CallOverrides): Promise<string>;
+
+  NFTWrapper(overrides?: CallOverrides): Promise<string>;
+
+  curveData(
+    overrides?: CallOverrides
+  ): Promise<
+    [string, number, number, number, number] & {
+      Curve: string;
+      usdtIndex: number;
+      usdcIndex: number;
+      daiIndex: number;
+      pUsdIndex: number;
+    }
+  >;
+
+  lockNft(
+    _nft: string,
+    _nftId: BigNumberish,
+    swap: string,
+    amountToBorrow: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   onERC721Received(
     arg0: string,
@@ -105,8 +196,36 @@ export class AlchemistNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  pUsd(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     Alchemist(overrides?: CallOverrides): Promise<string>;
+
+    DAI(overrides?: CallOverrides): Promise<string>;
+
+    Jpeg(overrides?: CallOverrides): Promise<string>;
+
+    NFTWrapper(overrides?: CallOverrides): Promise<string>;
+
+    curveData(
+      overrides?: CallOverrides
+    ): Promise<
+      [string, number, number, number, number] & {
+        Curve: string;
+        usdtIndex: number;
+        usdcIndex: number;
+        daiIndex: number;
+        pUsdIndex: number;
+      }
+    >;
+
+    lockNft(
+      _nft: string,
+      _nftId: BigNumberish,
+      swap: string,
+      amountToBorrow: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     onERC721Received(
       arg0: string,
@@ -115,12 +234,50 @@ export class AlchemistNFT extends BaseContract {
       arg3: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    pUsd(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "Initialized(address,address,address,address)"(
+      Alchemist?: string | null,
+      NFTWrapper?: null,
+      Jpeg?: null,
+      Curve?: null
+    ): TypedEventFilter<
+      [string, string, string, string],
+      { Alchemist: string; NFTWrapper: string; Jpeg: string; Curve: string }
+    >;
+
+    Initialized(
+      Alchemist?: string | null,
+      NFTWrapper?: null,
+      Jpeg?: null,
+      Curve?: null
+    ): TypedEventFilter<
+      [string, string, string, string],
+      { Alchemist: string; NFTWrapper: string; Jpeg: string; Curve: string }
+    >;
+  };
 
   estimateGas: {
     Alchemist(overrides?: CallOverrides): Promise<BigNumber>;
+
+    DAI(overrides?: CallOverrides): Promise<BigNumber>;
+
+    Jpeg(overrides?: CallOverrides): Promise<BigNumber>;
+
+    NFTWrapper(overrides?: CallOverrides): Promise<BigNumber>;
+
+    curveData(overrides?: CallOverrides): Promise<BigNumber>;
+
+    lockNft(
+      _nft: string,
+      _nftId: BigNumberish,
+      swap: string,
+      amountToBorrow: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     onERC721Received(
       arg0: string,
@@ -129,10 +286,28 @@ export class AlchemistNFT extends BaseContract {
       arg3: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    pUsd(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     Alchemist(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    DAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    Jpeg(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    NFTWrapper(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    curveData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    lockNft(
+      _nft: string,
+      _nftId: BigNumberish,
+      swap: string,
+      amountToBorrow: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     onERC721Received(
       arg0: string,
@@ -141,5 +316,7 @@ export class AlchemistNFT extends BaseContract {
       arg3: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    pUsd(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
