@@ -16,3 +16,5 @@ deployments/localhost
 
 # testnet logs
 testnet/testnet-node-log.txt
+
+.vscode
