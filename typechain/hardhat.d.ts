@@ -81,6 +81,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
+    getContractFactory(
       name: "IERC721Receiver",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Receiver__factory>;
@@ -169,6 +173,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemistV2State__factory>;
     getContractFactory(
+      name: "IAlchemistNFTErrors",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFTErrors__factory>;
+    getContractFactory(
+      name: "IAlchemistNFTEvents",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFTEvents__factory>;
+    getContractFactory(
       name: "IAToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAToken__factory>;
@@ -197,6 +209,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETHGateway__factory>;
     getContractFactory(
+      name: "ICryptoPunks",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICryptoPunks__factory>;
+    getContractFactory(
+      name: "ICurve",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICurve__factory>;
+    getContractFactory(
       name: "IProxyAdmin",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IProxyAdmin__factory>;
@@ -204,6 +224,10 @@ declare module "hardhat/types/runtime" {
       name: "IWETH9",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETH9__factory>;
+    getContractFactory(
+      name: "IJpeg",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IJpeg__factory>;
     getContractFactory(
       name: "DaiJoinLike",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -273,6 +297,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemicToken__factory>;
     getContractFactory(
+      name: "IAlchemistNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFT__factory>;
+    getContractFactory(
       name: "IAlchemistV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemistV2__factory>;
@@ -316,6 +344,10 @@ declare module "hardhat/types/runtime" {
       name: "IMulticall",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IMulticall__factory>;
+    getContractFactory(
+      name: "INFTWrapper",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.INFTWrapper__factory>;
     getContractFactory(
       name: "ISelfPermit",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -519,6 +551,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
+      name: "IERC721",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
+    getContractAt(
       name: "IERC721Receiver",
       address: string,
       signer?: ethers.Signer
@@ -629,6 +666,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemistV2State>;
     getContractAt(
+      name: "IAlchemistNFTErrors",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFTErrors>;
+    getContractAt(
+      name: "IAlchemistNFTEvents",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFTEvents>;
+    getContractAt(
       name: "IAToken",
       address: string,
       signer?: ethers.Signer
@@ -664,6 +711,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IWETHGateway>;
     getContractAt(
+      name: "ICryptoPunks",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICryptoPunks>;
+    getContractAt(
+      name: "ICurve",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICurve>;
+    getContractAt(
       name: "IProxyAdmin",
       address: string,
       signer?: ethers.Signer
@@ -673,6 +730,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IWETH9>;
+    getContractAt(
+      name: "IJpeg",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IJpeg>;
     getContractAt(
       name: "DaiJoinLike",
       address: string,
@@ -759,6 +821,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemicToken>;
     getContractAt(
+      name: "IAlchemistNFT",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFT>;
+    getContractAt(
       name: "IAlchemistV2",
       address: string,
       signer?: ethers.Signer
@@ -813,6 +880,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IMulticall>;
+    getContractAt(
+      name: "INFTWrapper",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.INFTWrapper>;
     getContractAt(
       name: "ISelfPermit",
       address: string,

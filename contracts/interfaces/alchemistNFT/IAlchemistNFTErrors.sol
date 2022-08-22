@@ -7,5 +7,5 @@ pragma solidity >=0.8.0;
 interface IAlchemistNFTErrors {
 
     /// @notice
-    error NFTAlreadyUsed(address user, address nft);
+    error NFTAlreadyUsed(address user, address nft, uint256 nftId);
 }

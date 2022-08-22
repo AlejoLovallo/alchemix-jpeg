@@ -4,5 +4,5 @@ pragma solidity >=0.5.0;
 /// @author Alchemix Finance
 interface IAlchemistNFTEvents {
     /// @notice Emitted when the pending admin is updated.
-    event Initialized(address indexed alchemist, address indexed cryptopunk);
+    event Initialized(address indexed Alchemist, address NFTWrapper, address Jpeg, address Curve);
 }
