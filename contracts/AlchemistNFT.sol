@@ -1,59 +1,55 @@
 pragma solidity ^0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
+import "./interfaces/INFTWrapper.sol";
+import "./interfaces/IAlchemistV2.sol";
+import "./libraries/Sets.sol";
+
 /// @title  AlchemistNFT
 /// @author Alchemix Finance
-contract AlchemistNFT{
-    /// @dev Checks the whitelist for msg.sender.
-    ///
-    /// Reverts if msg.sender is not in the whitelist.
-    function _onlyWhitelisted() internal view {
-        // Check if the message sender is an EOA. In the future, this potentially may break. It is important that functions
-        // which rely on the whitelist not be explicitly vulnerable in the situation where this no longer holds true.
-        if (tx.origin == msg.sender) {
-          return;
-        }
+contract AlchemistNFT is Initializable, IAlchemistV2, IERC721Receiver{
+    using Sets for Sets.AddressSet;
 
-        // Only check the whitelist for calls from contracts.
-        if (!IWhitelist(whitelist).isWhitelisted(msg.sender)) {
-          revert Unauthorized();
+    struct Account {
+        // The set of yield tokens that the account has deposited into the system.
+        Sets.AddressSet depositedTokens;
+    }
+
+    IAlchemistV2 immutable public Alchemist;
+    INFTWrapper immutable public NFTWrapper;
+
+    /// @notice user to nft transfered to vaule
+    mapping(address => Account) private users;
+
+    constructor(address _alchemist,address _nftWrapper) initializer {
+        Alchemist = IAlchemistV2(_alchemist);
+        NFTWrapper = INFTWrapper(_nftWrapper);
+
+        emit Initialized(Alchemist,NFTWrapper);
+    }
+
+    function lockNFT(address _nft,address _nftId) public override returns (boolean){
+        _checkNFT(msg.sender,_nft);
+        
+    }
+
+    function _checkNFT(address _user,address _nft) internal view {
+        if(users[_user].depositedTokens.contains(_nft)){
+            revert NFTAlreadyUsed(_user,_nft);
         }
     }
 
-    /// @dev Checks an expression and reverts with an {IllegalArgument} error if the expression is {false}.
-    ///
-    /// @param expression The expression to check.
-    function _checkArgument(bool expression) internal pure {
-        if (!expression) {
-            revert IllegalArgument();
-        }
+    /**
+     * Always returns `IERC721Receiver.onERC721Received.selector`.
+    */
+    function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
-    /// @dev Checks an expression and reverts with an {IllegalState} error if the expression is {false}.
-    ///
-    /// @param expression The expression to check.
-    function _checkState(bool expression) internal pure {
-        if (!expression) {
-            revert IllegalState();
-        }
-    }
-
-    /// @dev Adds two unsigned 256 bit integers together and returns the result.
-    ///
-    /// @dev This operation is checked and will fail if the result overflows.
-    ///
-    /// @param x The first operand.
-    /// @param y The second operand.
-    ///
-    /// @return z The result.
-    function _uadd(uint256 x, uint256 y) internal pure returns (uint256 z) { z = x + y; }
-
-    /// @dev Subtracts two unsigned 256 bit integers together and returns the result.
-    ///
-    /// @dev This operation is checked and will fail if the result overflows.
-    ///
-    /// @param x The first operand.
-    /// @param y The second operand.
-    ///
-    /// @return z the result.
-    function _usub(uint256 x, uint256 y) internal pure returns (uint256 z) { z = x - y; }
+    // Leave a gap betweeen inherited contracts variables in order
+    // to be able to add more variables in them later.
+    uint256[50] private upgradeGap;
 }
