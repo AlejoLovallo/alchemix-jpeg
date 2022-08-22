@@ -18,3 +18,5 @@ deployments/localhost
 testnet/testnet-node-log.txt
 
 .vscode
+
+artifacts
