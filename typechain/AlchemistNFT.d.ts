@@ -26,9 +26,12 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     "Jpeg()": FunctionFragment;
     "NFTWrapper()": FunctionFragment;
     "curveData()": FunctionFragment;
+    "initialize(address)": FunctionFragment;
     "lockNft(address,uint256,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "owner()": FunctionFragment;
     "pUsd()": FunctionFragment;
+    "yDAI()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "Alchemist", values?: undefined): string;
@@ -39,6 +42,7 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "curveData", values?: undefined): string;
+  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(
     functionFragment: "lockNft",
     values: [string, BigNumberish, string, BigNumberish]
@@ -47,19 +51,24 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "onERC721Received",
     values: [string, string, BigNumberish, BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pUsd", values?: undefined): string;
+  encodeFunctionData(functionFragment: "yDAI", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "Alchemist", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "Jpeg", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "NFTWrapper", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "curveData", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lockNft", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pUsd", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "yDAI", data: BytesLike): Result;
 
   events: {
     "Initialized(address,address,address,address)": EventFragment;
@@ -141,6 +150,11 @@ export class AlchemistNFT extends BaseContract {
       }
     >;
 
+    initialize(
+      _owner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
@@ -157,7 +171,11 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
     pUsd(overrides?: CallOverrides): Promise<[string]>;
+
+    yDAI(overrides?: CallOverrides): Promise<[string]>;
   };
 
   Alchemist(overrides?: CallOverrides): Promise<string>;
@@ -180,6 +198,11 @@ export class AlchemistNFT extends BaseContract {
     }
   >;
 
+  initialize(
+    _owner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   lockNft(
     _nft: string,
     _nftId: BigNumberish,
@@ -196,7 +219,11 @@ export class AlchemistNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  owner(overrides?: CallOverrides): Promise<string>;
+
   pUsd(overrides?: CallOverrides): Promise<string>;
+
+  yDAI(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     Alchemist(overrides?: CallOverrides): Promise<string>;
@@ -219,6 +246,8 @@ export class AlchemistNFT extends BaseContract {
       }
     >;
 
+    initialize(_owner: string, overrides?: CallOverrides): Promise<void>;
+
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
@@ -235,7 +264,11 @@ export class AlchemistNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    owner(overrides?: CallOverrides): Promise<string>;
+
     pUsd(overrides?: CallOverrides): Promise<string>;
+
+    yDAI(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -271,6 +304,11 @@ export class AlchemistNFT extends BaseContract {
 
     curveData(overrides?: CallOverrides): Promise<BigNumber>;
 
+    initialize(
+      _owner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
@@ -287,7 +325,11 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
     pUsd(overrides?: CallOverrides): Promise<BigNumber>;
+
+    yDAI(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -301,6 +343,11 @@ export class AlchemistNFT extends BaseContract {
 
     curveData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    initialize(
+      _owner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
@@ -317,6 +364,10 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     pUsd(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    yDAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

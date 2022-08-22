@@ -32,7 +32,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         uint8 pUsdIndex;
     }
 
-
+    address public owner;
     address immutable public Alchemist;
     address immutable public NFTWrapper;
     address immutable public Jpeg;
@@ -40,6 +40,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
 
     IERC20 immutable public pUsd;
     IERC20 immutable public DAI;
+    IERC20 immutable public yDAI;
 
 
     /// @notice user to nft collection to account data
@@ -50,6 +51,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
                 address _jpeg,
                 address _dai,
                 address _pUsd,
+                address _yDai,
                 CurveData memory _curveData
                 ) initializer {
         Alchemist = _alchemist;
@@ -64,9 +66,17 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         });
 
         DAI = IERC20(_dai);
+        yDAI = IERC20(_yDai);
         pUsd = IERC20(_pUsd);
 
         emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
+    }
+
+    function initialize(address _owner) public initializer{
+        owner = _owner;
+        _setUpCurve();
+        _setUpJpeg();
+        _setUpAlchemistV2();
     }
 
     /**
@@ -93,13 +103,35 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         uint256 preDAIBalance = DAI.balanceOf(address(this));
         ICurve(curveData.Curve).exchange(curveData.pUsdIndex,
                         curveData.daiIndex,
-                        (postPUsdBalance/2),
+                        ( (postPUsdBalance-prePUsdBalance) /2),
                         0
                         );
-        require(DAI.balanceOf(address(this))> preDAIBalance,"PUSD-DAI EXCHANGE WENT WRONG");
+        uint256 postDAIBalance = DAI.balanceOf(address(this));
+        require(postDAIBalance > preDAIBalance,"PUSD-DAI EXCHANGE WENT WRONG");
 
         // INTERACTION WITH ALCHEMISTV2
-        
+        IAlchemistV2(Alchemist).depositUnderlying(address(yDAI),
+                        (postDAIBalance - preDAIBalance),
+                        msg.sender,
+                        (postDAIBalance - preDAIBalance)
+                    );
+
+    }
+
+    /**
+     * TODO: APPROVE CONTRACTS WITH AMOUNTS TO ENABLE PROTOCOLS INTERACTIONS
+     */
+
+    function _setUpJpeg() internal {
+
+    }
+
+    function _setUpCurve() internal {
+
+    }
+
+    function _setUpAlchemistV2() internal {
+
     }
 
 
