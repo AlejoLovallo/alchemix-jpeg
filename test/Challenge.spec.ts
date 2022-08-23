@@ -11,7 +11,9 @@ import {
   IERC721Metadata,
   IERC20Minimal,
   IAlchemistV2,
+  AlchemicDropsNFT,
 } from "../typechain";
+import { parseEther, parseUnits } from "ethers/lib/utils";
 
 describe.only("Challenge to run as mainnet fork", () => {
   let impersonatedSigner: SignerWithAddress;
@@ -46,7 +48,6 @@ describe.only("Challenge to run as mainnet fork", () => {
       params: [address],
     });
     impersonatedSigner = await ethers.getSigner(address);
-
     nftContract = IERC721Metadata__factory.connect(
       baycAddress,
       impersonatedSigner
@@ -63,7 +64,50 @@ describe.only("Challenge to run as mainnet fork", () => {
     );
   });
 
-  describe("Do steps off chain", () => {
+  describe("Do steps on chain", () => {
+    it("check the Bored Ape", async () => {
+      const dropsFactory = await ethers.getContractFactory("AlchemicDropsNFT");
+      let alchemicDropsNFT = (await dropsFactory.deploy()) as AlchemicDropsNFT;
+      const [owner] = await ethers.getSigners();
+      await alchemicDropsNFT.initialize(
+        owner.address,
+        alchemistAddress,
+        dropsComptroller,
+        usdcAddress,
+        yieldTokenAddress,
+        usdcCErc20,
+        [dropsCErc721]
+      );
+      const borrowAmount = "1000000";
+      await owner.sendTransaction({
+        to: impersonatedSigner.address,
+        value: parseUnits("10", "ether"),
+      });
+
+      // Approve the token before minting
+      await nftContract.approve(alchemicDropsNFT.address, nftId);
+
+      alchemicDropsNFT = alchemicDropsNFT.connect(impersonatedSigner);
+      alchemistContract
+        .connect(impersonatedSigner)
+        .approveMint(alchemicDropsNFT.address, ethers.constants.MaxUint256);
+
+      await alchemicDropsNFT.lockNft(
+        baycAddress,
+        nftId,
+        borrowAmount,
+        dropsCErc721
+      );
+      const ownerOfNft = await nftContract.ownerOf(nftId);
+      expect(dropsCErc721).eql(ownerOfNft);
+
+      const { debt } = await alchemistContract.accounts(
+        impersonatedSigner.address
+      );
+      console.log("debt", debt);
+    });
+  });
+  describe.skip("Do steps off chain", () => {
     it("check the Bored Ape", async () => {
       const owner = await nftContract.ownerOf(nftId);
       const address = await impersonatedSigner.getAddress();
@@ -137,13 +181,20 @@ describe.only("Challenge to run as mainnet fork", () => {
         1
       );
 
-      const shares = await alchemistContract.positions(
+      const [shares] = await alchemistContract.positions(
         impersonatedSigner.address,
         yieldTokenAddress
       );
       console.log("shares", shares.toString());
 
-      // TODO mint debt and move this to solidity
+      // TODO move this to solidity
+      await alchemistContract.mint(shares.div(2), impersonatedSigner.address);
+
+      const { debt } = await alchemistContract.accounts(
+        impersonatedSigner.address
+      );
+      console.log("debt", debt);
+      expect(shares.div(2).toString()).eql(debt.toString());
     });
   });
 });
