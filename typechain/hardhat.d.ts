@@ -117,6 +117,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AlchemicTokenV2Base__factory>;
     getContractFactory(
+      name: "AlchemistJPEG",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AlchemistJPEG__factory>;
+    getContractFactory(
       name: "AlchemistNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AlchemistNFT__factory>;
@@ -663,6 +667,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.AlchemicTokenV2Base>;
+    getContractAt(
+      name: "AlchemistJPEG",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AlchemistJPEG>;
     getContractAt(
       name: "AlchemistNFT",
       address: string,

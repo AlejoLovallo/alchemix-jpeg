@@ -3,9 +3,6 @@ import { network, ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import {
   IERC721Metadata__factory,
-  CErc721Interface__factory,
-  ComptrollerInterface__factory,
-  CErc20Interface__factory,
   IERC20Minimal__factory,
   IAlchemistV2__factory,
   IERC721Metadata,
@@ -13,13 +10,14 @@ import {
   IAlchemistV2,
   IAlchemistNFT,
 } from "../typechain";
+import { AlchemistJPEG } from "../typechain/AlchemistJPEG";
 
 describe.only("Challenge to run as mainnet fork", () => {
   let impersonatedSigner: SignerWithAddress;
   let nftContract: IERC721Metadata;
   let daiContract: IERC20Minimal;
   let alchemistContract: IAlchemistV2;
-  let alchemistNFTVault: IAlchemistNFT;
+  let alchemistNFTVault: AlchemistJPEG;
 
   /***
    * JPEG ADDRESSES
@@ -43,7 +41,6 @@ describe.only("Challenge to run as mainnet fork", () => {
   const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
   before(async () => {
-    console.log('------- EJECUTANDO ESTO ------');
     const nftOwner = "0x271c7603AAf2BD8F68e8Ca60f4A4F22c4920259f";
     await network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -59,6 +56,12 @@ describe.only("Challenge to run as mainnet fork", () => {
       alchemistAddress,
       impersonatedSigner
     );
+
+    const AlchemistJPEG = await ethers.getContractFactory("AlchemistJPEG");
+    alchemistNFTVault = (await AlchemistJPEG.deploy()) as AlchemistJPEG;
+    await alchemistNFTVault.deployed();
+    console.log('ALCHEMIST NFT VAULT DEPLOYED');
+    console.log(alchemistNFTVault.address);
   });
 
   describe("Do steps off chain", () => {
@@ -69,13 +72,11 @@ describe.only("Challenge to run as mainnet fork", () => {
       expect(address).eql(owner);
     });
 
-    it("lockNFT", async () => {
-      
+    xit("lockNFT", async () => {
+      //APPROVE NFT COLLECTION TO CONTRACT
+      //await nftContract.approve(
     });
 
-    it('UnlockNFT',async()=>{
-      
-    })
-
+    xit("UnlockNFT", async () => {});
   });
 });

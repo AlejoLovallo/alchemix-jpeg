@@ -6,7 +6,6 @@ Currently, The Alchemix Platform allows users to leverage a range of ERC-20 toke
 
 Add the possibility to the users request a loan using their NFTs to be used as collateral through an integration with a loan platform for NFT. Users can leverage their idle NFTs to obtain loans and earn extra yield.
 
-Jpeg plattform and take advantage of the Alchemix Protocol.
 ## Solution
 
 For our solution, we analyzed two NFTs loan platform: Drops and JPEGd. Those platform work a quite different. For instance, Drops has lending pools where the user gets eth, dai or usdc. On the other hand, JPEGd offeres in exchange pUSD and a third party is required to exchange those tokens to ones that Alchemix supports. In that case, we propose Curve.fi to swap them.
@@ -38,6 +37,11 @@ For instance, the following diagram shows a deposits flow where the user gets DA
 ### Drops
 
 This integration works quite similar to the previous one. The main difference is the Users gets directly USDC from the Drops platform and swap is not required.
+
+### Implementation
+
+* [AlchemistJPEG](./contracts/AlchemistNFT.sol)
+* [AlchemistDrops](./contracts/)
 
 ## ToDo
 - [x] JPEGd integration design

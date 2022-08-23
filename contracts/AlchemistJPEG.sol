@@ -14,9 +14,9 @@ import "./interfaces/INFTWrapper.sol";
 import "./libraries/Sets.sol";
 import "./base/Errors.sol";
 
-/// @title  AlchemistNFT
+/// @title  AlchemistJPEG
 /// @author Alchemix Finance
-contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
+contract AlchemistJPEG is Initializable, IAlchemistNFT, IERC721Receiver{
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using SafeERC20 for IERC20;
 
@@ -233,6 +233,10 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     /**
      * TODO: APPROVE CONTRACTS WITH AMOUNTS TO ENABLE PROTOCOLS INTERACTIONS
      */
+
+    function approveNFTCollection(address nft) external {
+        IERC721(nft).setApprovalForAll(address(this),true);
+    }
 
     function _setUpJpeg() internal {
 
