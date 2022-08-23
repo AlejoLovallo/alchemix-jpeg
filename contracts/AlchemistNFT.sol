@@ -27,9 +27,6 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
 
     struct CurveData{
         address Curve;
-        uint8 usdtIndex;
-        uint8 usdcIndex;
-        uint8 daiIndex;
         uint8 pUsdIndex;
     }
 
@@ -41,9 +38,6 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     CurveData public curveData;
 
     IERC20 immutable public pUsd;
-    IERC20 immutable public DAI;
-    IERC20 immutable public yDAI;
-
 
     /// @notice user to nft collection to account data
     mapping(address => mapping(address => Account)) private users;
@@ -51,9 +45,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     constructor(address _alchemist,
                 address _nftWrapper, 
                 address _jpeg,
-                address _dai,
                 address _pUsd,
-                address _yDai,
                 CurveData memory _curveData
                 ) initializer {
         Alchemist = _alchemist;
@@ -61,14 +53,9 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         Jpeg = _jpeg;
         curveData = CurveData({
             Curve: _curveData.Curve,
-            usdtIndex: _curveData.usdtIndex,
-            usdcIndex: _curveData.usdcIndex,
-            daiIndex:  _curveData.daiIndex,
             pUsdIndex: _curveData.pUsdIndex
         });
 
-        DAI = IERC20(_dai);
-        yDAI = IERC20(_yDai);
         pUsd = IERC20(_pUsd);
 
         emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
@@ -108,7 +95,10 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
      */
     function lockNft(address _nft,
                      uint256 _nftId,
-                     uint256 amountToBorrow) public override returns(uint256){
+                     uint256 amountToBorrow,
+                     address underlyingToken,
+                     address yieldToken,
+                     uint256 curveTokenIndex) public override returns(uint256){
         _checkNFT(msg.sender,_nft,_nftId);
 
         //GET NFT
@@ -122,29 +112,29 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         require(postPUsdBalance > prePUsdBalance,"BORROW PUSD WENT WRONG");
 
         //SWAP PUSD FOR STABLE
-        uint256 preDAIBalance = DAI.balanceOf(address(this));
+        uint256 preStableTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
         ICurve(curveData.Curve).exchange(curveData.pUsdIndex,
-                        curveData.daiIndex,
+                        curveTokenIndex,
                         ( (postPUsdBalance-prePUsdBalance) /2),
                         0
                         );
-        uint256 postDAIBalance = DAI.balanceOf(address(this));
-        require(postDAIBalance > preDAIBalance,"PUSD-DAI EXCHANGE WENT WRONG");
+        uint256 postStableTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
+        require(postStableTokenBalance > preStableTokenBalance,"PUSD-DAI EXCHANGE WENT WRONG");
 
         // INTERACTION WITH ALCHEMISTV2 VAULT
-        uint256 shares = IAlchemistV2(Alchemist).depositUnderlying(address(yDAI),
-                        (postDAIBalance - preDAIBalance),
+        uint256 shares = IAlchemistV2(Alchemist).depositUnderlying(yieldToken,
+                        (postStableTokenBalance - preStableTokenBalance),
                         address(this),
-                        (postDAIBalance - preDAIBalance)
+                        (postStableTokenBalance - preStableTokenBalance)
                     );
         //MINT allUSD
         IAlchemistV2(Alchemist).mintFrom(msg.sender,(shares/2),msg.sender);
-        
+
         emit NFTLocked(msg.sender,
                        _nft,
                        _nftId,
                        (postPUsdBalance-prePUsdBalance),
-                       (postDAIBalance-preDAIBalance),
+                       (postStableTokenBalance-preStableTokenBalance),
                        shares
                       );
         return shares;

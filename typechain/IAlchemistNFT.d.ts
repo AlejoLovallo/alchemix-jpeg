@@ -22,7 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface IAlchemistNFTInterface extends ethers.utils.Interface {
   functions: {
     "acceptAdmin()": FunctionFragment;
-    "lockNft(address,uint256,uint256)": FunctionFragment;
+    "lockNft(address,uint256,uint256,address,address,uint256)": FunctionFragment;
     "setPendingAdmin(address)": FunctionFragment;
     "unlockNFT()": FunctionFragment;
   };
@@ -33,7 +33,7 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "lockNft",
-    values: [string, BigNumberish, BigNumberish]
+    values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setPendingAdmin",
@@ -147,6 +147,9 @@ export class IAlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -168,6 +171,9 @@ export class IAlchemistNFT extends BaseContract {
     _nft: string,
     _nftId: BigNumberish,
     amountToBorrow: BigNumberish,
+    underlyingToken: string,
+    yieldToken: string,
+    curveTokenIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -187,6 +193,9 @@ export class IAlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -282,6 +291,9 @@ export class IAlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -304,6 +316,9 @@ export class IAlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

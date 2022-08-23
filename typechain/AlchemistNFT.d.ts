@@ -22,24 +22,21 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface AlchemistNFTInterface extends ethers.utils.Interface {
   functions: {
     "Alchemist()": FunctionFragment;
-    "DAI()": FunctionFragment;
     "Jpeg()": FunctionFragment;
     "NFTWrapper()": FunctionFragment;
     "acceptAdmin()": FunctionFragment;
     "admin()": FunctionFragment;
     "curveData()": FunctionFragment;
     "initialize(address)": FunctionFragment;
-    "lockNft(address,uint256,uint256)": FunctionFragment;
+    "lockNft(address,uint256,uint256,address,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "pUsd()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "setPendingAdmin(address)": FunctionFragment;
     "unlockNFT()": FunctionFragment;
-    "yDAI()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "Alchemist", values?: undefined): string;
-  encodeFunctionData(functionFragment: "DAI", values?: undefined): string;
   encodeFunctionData(functionFragment: "Jpeg", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "NFTWrapper",
@@ -54,7 +51,7 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(
     functionFragment: "lockNft",
-    values: [string, BigNumberish, BigNumberish]
+    values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
@@ -70,10 +67,8 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "unlockNFT", values?: undefined): string;
-  encodeFunctionData(functionFragment: "yDAI", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "Alchemist", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "Jpeg", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "NFTWrapper", data: BytesLike): Result;
   decodeFunctionResult(
@@ -98,7 +93,6 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unlockNFT", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "yDAI", data: BytesLike): Result;
 
   events: {
     "AdminUpdated(address)": EventFragment;
@@ -189,8 +183,6 @@ export class AlchemistNFT extends BaseContract {
   functions: {
     Alchemist(overrides?: CallOverrides): Promise<[string]>;
 
-    DAI(overrides?: CallOverrides): Promise<[string]>;
-
     Jpeg(overrides?: CallOverrides): Promise<[string]>;
 
     NFTWrapper(overrides?: CallOverrides): Promise<[string]>;
@@ -203,15 +195,7 @@ export class AlchemistNFT extends BaseContract {
 
     curveData(
       overrides?: CallOverrides
-    ): Promise<
-      [string, number, number, number, number] & {
-        Curve: string;
-        usdtIndex: number;
-        usdcIndex: number;
-        daiIndex: number;
-        pUsdIndex: number;
-      }
-    >;
+    ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
     initialize(
       _admin: string,
@@ -222,6 +206,9 @@ export class AlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -245,13 +232,9 @@ export class AlchemistNFT extends BaseContract {
     unlockNFT(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    yDAI(overrides?: CallOverrides): Promise<[string]>;
   };
 
   Alchemist(overrides?: CallOverrides): Promise<string>;
-
-  DAI(overrides?: CallOverrides): Promise<string>;
 
   Jpeg(overrides?: CallOverrides): Promise<string>;
 
@@ -265,15 +248,7 @@ export class AlchemistNFT extends BaseContract {
 
   curveData(
     overrides?: CallOverrides
-  ): Promise<
-    [string, number, number, number, number] & {
-      Curve: string;
-      usdtIndex: number;
-      usdcIndex: number;
-      daiIndex: number;
-      pUsdIndex: number;
-    }
-  >;
+  ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
   initialize(
     _admin: string,
@@ -284,6 +259,9 @@ export class AlchemistNFT extends BaseContract {
     _nft: string,
     _nftId: BigNumberish,
     amountToBorrow: BigNumberish,
+    underlyingToken: string,
+    yieldToken: string,
+    curveTokenIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -308,12 +286,8 @@ export class AlchemistNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  yDAI(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     Alchemist(overrides?: CallOverrides): Promise<string>;
-
-    DAI(overrides?: CallOverrides): Promise<string>;
 
     Jpeg(overrides?: CallOverrides): Promise<string>;
 
@@ -325,15 +299,7 @@ export class AlchemistNFT extends BaseContract {
 
     curveData(
       overrides?: CallOverrides
-    ): Promise<
-      [string, number, number, number, number] & {
-        Curve: string;
-        usdtIndex: number;
-        usdcIndex: number;
-        daiIndex: number;
-        pUsdIndex: number;
-      }
-    >;
+    ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
     initialize(_admin: string, overrides?: CallOverrides): Promise<void>;
 
@@ -341,6 +307,9 @@ export class AlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -359,8 +328,6 @@ export class AlchemistNFT extends BaseContract {
     setPendingAdmin(value: string, overrides?: CallOverrides): Promise<void>;
 
     unlockNFT(overrides?: CallOverrides): Promise<void>;
-
-    yDAI(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -444,8 +411,6 @@ export class AlchemistNFT extends BaseContract {
   estimateGas: {
     Alchemist(overrides?: CallOverrides): Promise<BigNumber>;
 
-    DAI(overrides?: CallOverrides): Promise<BigNumber>;
-
     Jpeg(overrides?: CallOverrides): Promise<BigNumber>;
 
     NFTWrapper(overrides?: CallOverrides): Promise<BigNumber>;
@@ -467,6 +432,9 @@ export class AlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -490,14 +458,10 @@ export class AlchemistNFT extends BaseContract {
     unlockNFT(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    yDAI(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     Alchemist(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    DAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     Jpeg(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -520,6 +484,9 @@ export class AlchemistNFT extends BaseContract {
       _nft: string,
       _nftId: BigNumberish,
       amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -543,7 +510,5 @@ export class AlchemistNFT extends BaseContract {
     unlockNFT(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    yDAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

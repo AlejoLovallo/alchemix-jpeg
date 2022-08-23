@@ -158,6 +158,21 @@ const _abi = [
         name: "amountToBorrow",
         type: "uint256",
       },
+      {
+        internalType: "address",
+        name: "underlyingToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "yieldToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "curveTokenIndex",
+        type: "uint256",
+      },
     ],
     name: "lockNft",
     outputs: [
