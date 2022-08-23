@@ -43,7 +43,9 @@ This integration works quite similar to the previous one. The main difference is
 - [x] JPEGd integration design
 - [x] JPEGd NFT lock functionality
 - [x] Alchemix NFT Vault using NFT as collateral
-- [ ] JPEGd Unlock NFT functionality
+- [x] JPEGd Unlock NFT functionality
+- [x] Drops NFT Lock functionality
+- [ ] Drops NFT Unlock functionality
 - [ ] Tests
 - [ ] Improvement proposal: deploy all contracts using [hardhat deploy plugin](https://github.com/wighawag/hardhat-deploy)
 
