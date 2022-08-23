@@ -1,43 +1,54 @@
 # Alchemix: Non-Fungible Tokens as Collateral
 ## Context
 
-* Currently, The Alchemix Platform allows users to leverage a range of ERC-20 tokens without risk of liquidation depositing those tokens in vaults.
+Currently, The Alchemix Platform allows users to leverage a range of ERC-20 tokens without risk of liquidation depositing those tokens in vaults.
 ## Proposal
 
-* Add the possibility to the users to deposit their NFTs as Collateral using Jpeg plattform and take advantage of the Alchemix Protocol.
+Add the possibility to the users request a loan using their NFTs to be used as collateral through an integration with a loan platform for NFT. Users can leverage their idle NFTs to obtain loans and earn extra yield.
+
+Jpeg plattform and take advantage of the Alchemix Protocol.
 ## Solution
 
-* Using the JPEGd NFT borrowing and lending platform, the Protocol will create a new vault asking the user to transfer its NFT. Nowadays, this platform has five different types of NFT collections. Such as CryptoPunks, BAYC, MAYC, Doodles and EtherRocks.
+For our solution, we analyzed two NFTs loan platform: Drops and JPEGd. Those platform work a quite different. For instance, Drops has lending pools where the user gets eth, dai or usdc. On the other hand, JPEGd offeres in exchange pUSD and a third party is required to exchange those tokens to ones that Alchemix supports. In that case, we propose Curve.fi to swap them.
 
-* Firstly, the idea is to create different types of vaults on Alchemix to allow users to deposit their tokens there. 
+The idea is to create different types of vaults on Alchemix to allow users to deposit their tokens there. For instance, JPEGd CryptoPunk NFTs. 
+
+### JPEGd integration
+
+* Using the JPEGd NFT borrowing and lending platform, the Protocol will create a new vault asking the user to transfer its NFT. Nowadays, this platform has four different types of NFT collections.  Such as CryptoPunks, BAYC, MAYC, Doodles and EtherRocks. 
+* Firstly, the users deposits a NFT in the corresponding vault 
 * Secondly, behind the scene those tokens will be deposited into JPEGd in exchange of pUSD which will be minted. 
 * Thirdly, The pUSD tokens will be swapped in Curve Finance in exchange of DAI or any stablecoin that Alchemix supports. 
 * Finally, The DAI will follow the usual lending and borrowing details of Alchemix. 
 
 ### Basic diagram
 
-![](./img/basic-diagram.png)
+![](./img/jpeg-basic-diagram.png)
 
-### Deposit Flow
+#### Deposit Flow
 
 For instance, the following diagram shows a deposits flow where the user gets DAI tokens
 
-![](./img/deposit-flow.png)
+![](./img/jpeg-deposit-flow.png)
 
-### Withdraw Flow
+#### Withdraw Flow
 
-![](./img/withdraw-flow.png)
+![](./img/jpeg-withdraw-flow.png)
+
+### Drops
+
+This integration works quite similar to the previous one. The main difference is the Users gets directly USDC from the Drops platform and swap is not required.
 
 ## ToDo
-- [x] Jpeg integration design
-- [x] Jpeg NFT lock functionality
+- [x] JPEGd integration design
+- [x] JPEGd NFT lock functionality
 - [x] Alchemix NFT Vault using NFT as collateral
-- [ ] Jpeg Unlock NFT functionality
+- [ ] JPEGd Unlock NFT functionality
 - [ ] Tests
 - [ ] Improvement proposal: deploy all contracts using [hardhat deploy plugin](https://github.com/wighawag/hardhat-deploy)
 
 ## References
 
-- [Alchemix](https://alchemix-finance.gitbook.io/v2/)
-- [Curve](https://resources.curve.fi/base-features/understanding-crypto-pools)
-- [JPEG’d](https://docs.jpegd.io/)
+- [Alchemix](https://alchemix.fi/): [Docs](https://alchemix-finance.gitbook.io/v2/) - [Github](https://github.com/alchemix-finance/v2-contracts)
+- [Curve](https://curve.fi/): [Docs](https://resources.curve.fi/base-features/understanding-crypto-pools) - [Github](https://github.com/curvefi/curve-contract)
+- [Drops](https://drops.co/): [Docs](https://docs.drops.co/) - [Github](https://github.com/Dropsorg/drops-nft-contracts/blob/main/ReadMe.md)
