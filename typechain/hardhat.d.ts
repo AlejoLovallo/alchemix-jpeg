@@ -81,6 +81,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
+    getContractFactory(
+      name: "IERC721Receiver",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Receiver__factory>;
+    getContractFactory(
       name: "ERC165",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC165__factory>;
@@ -109,6 +117,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AlchemicTokenV2Base__factory>;
     getContractFactory(
+      name: "AlchemistNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AlchemistNFT__factory>;
+    getContractFactory(
       name: "AlchemistV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AlchemistV2__factory>;
@@ -124,6 +136,74 @@ declare module "hardhat/types/runtime" {
       name: "SelfPermit",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SelfPermit__factory>;
+    getContractFactory(
+      name: "CDelegateInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CDelegateInterface__factory>;
+    getContractFactory(
+      name: "CDelegationStorage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CDelegationStorage__factory>;
+    getContractFactory(
+      name: "CDelegatorInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CDelegatorInterface__factory>;
+    getContractFactory(
+      name: "CErc20Interface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc20Interface__factory>;
+    getContractFactory(
+      name: "CErc20Storage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc20Storage__factory>;
+    getContractFactory(
+      name: "CErc721Interface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc721Interface__factory>;
+    getContractFactory(
+      name: "CErc721MigrationInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc721MigrationInterface__factory>;
+    getContractFactory(
+      name: "CErc721MigrationStorage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc721MigrationStorage__factory>;
+    getContractFactory(
+      name: "CErc721Storage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CErc721Storage__factory>;
+    getContractFactory(
+      name: "CTokenInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CTokenInterface__factory>;
+    getContractFactory(
+      name: "CTokenStorage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CTokenStorage__factory>;
+    getContractFactory(
+      name: "ComptrollerG3Interface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ComptrollerG3Interface__factory>;
+    getContractFactory(
+      name: "ComptrollerInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ComptrollerInterface__factory>;
+    getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
+    getContractFactory(
+      name: "IERC721Enumerable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Enumerable__factory>;
+    getContractFactory(
+      name: "IERC721Metadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Metadata__factory>;
+    getContractFactory(
+      name: "IERC721Receiver",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Receiver__factory>;
     getContractFactory(
       name: "CrossChainCanonicalAlchemicTokenV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -161,6 +241,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemistV2State__factory>;
     getContractFactory(
+      name: "IAlchemistNFTErrors",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFTErrors__factory>;
+    getContractFactory(
+      name: "IAlchemistNFTEvents",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFTEvents__factory>;
+    getContractFactory(
       name: "IAToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAToken__factory>;
@@ -189,6 +277,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETHGateway__factory>;
     getContractFactory(
+      name: "ICryptoPunks",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICryptoPunks__factory>;
+    getContractFactory(
+      name: "ICurve",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICurve__factory>;
+    getContractFactory(
       name: "IProxyAdmin",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IProxyAdmin__factory>;
@@ -196,6 +292,10 @@ declare module "hardhat/types/runtime" {
       name: "IWETH9",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETH9__factory>;
+    getContractFactory(
+      name: "IJpeg",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IJpeg__factory>;
     getContractFactory(
       name: "DaiJoinLike",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -265,6 +365,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemicToken__factory>;
     getContractFactory(
+      name: "IAlchemistNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemistNFT__factory>;
+    getContractFactory(
       name: "IAlchemistV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemistV2__factory>;
@@ -308,6 +412,10 @@ declare module "hardhat/types/runtime" {
       name: "IMulticall",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IMulticall__factory>;
+    getContractFactory(
+      name: "INFTWrapper",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.INFTWrapper__factory>;
     getContractFactory(
       name: "ISelfPermit",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -511,6 +619,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
+      name: "IERC721",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
+    getContractAt(
+      name: "IERC721Receiver",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Receiver>;
+    getContractAt(
       name: "ERC165",
       address: string,
       signer?: ethers.Signer
@@ -546,6 +664,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.AlchemicTokenV2Base>;
     getContractAt(
+      name: "AlchemistNFT",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AlchemistNFT>;
+    getContractAt(
       name: "AlchemistV2",
       address: string,
       signer?: ethers.Signer
@@ -565,6 +688,91 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SelfPermit>;
+    getContractAt(
+      name: "CDelegateInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CDelegateInterface>;
+    getContractAt(
+      name: "CDelegationStorage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CDelegationStorage>;
+    getContractAt(
+      name: "CDelegatorInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CDelegatorInterface>;
+    getContractAt(
+      name: "CErc20Interface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc20Interface>;
+    getContractAt(
+      name: "CErc20Storage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc20Storage>;
+    getContractAt(
+      name: "CErc721Interface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc721Interface>;
+    getContractAt(
+      name: "CErc721MigrationInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc721MigrationInterface>;
+    getContractAt(
+      name: "CErc721MigrationStorage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc721MigrationStorage>;
+    getContractAt(
+      name: "CErc721Storage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CErc721Storage>;
+    getContractAt(
+      name: "CTokenInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CTokenInterface>;
+    getContractAt(
+      name: "CTokenStorage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CTokenStorage>;
+    getContractAt(
+      name: "ComptrollerG3Interface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ComptrollerG3Interface>;
+    getContractAt(
+      name: "ComptrollerInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ComptrollerInterface>;
+    getContractAt(
+      name: "IERC721",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
+    getContractAt(
+      name: "IERC721Enumerable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Enumerable>;
+    getContractAt(
+      name: "IERC721Metadata",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Metadata>;
+    getContractAt(
+      name: "IERC721Receiver",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Receiver>;
     getContractAt(
       name: "CrossChainCanonicalAlchemicTokenV2",
       address: string,
@@ -611,6 +819,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemistV2State>;
     getContractAt(
+      name: "IAlchemistNFTErrors",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFTErrors>;
+    getContractAt(
+      name: "IAlchemistNFTEvents",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFTEvents>;
+    getContractAt(
       name: "IAToken",
       address: string,
       signer?: ethers.Signer
@@ -646,6 +864,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IWETHGateway>;
     getContractAt(
+      name: "ICryptoPunks",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICryptoPunks>;
+    getContractAt(
+      name: "ICurve",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICurve>;
+    getContractAt(
       name: "IProxyAdmin",
       address: string,
       signer?: ethers.Signer
@@ -655,6 +883,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IWETH9>;
+    getContractAt(
+      name: "IJpeg",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IJpeg>;
     getContractAt(
       name: "DaiJoinLike",
       address: string,
@@ -741,6 +974,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemicToken>;
     getContractAt(
+      name: "IAlchemistNFT",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemistNFT>;
+    getContractAt(
       name: "IAlchemistV2",
       address: string,
       signer?: ethers.Signer
@@ -795,6 +1033,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IMulticall>;
+    getContractAt(
+      name: "INFTWrapper",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.INFTWrapper>;
     getContractAt(
       name: "ISelfPermit",
       address: string,
