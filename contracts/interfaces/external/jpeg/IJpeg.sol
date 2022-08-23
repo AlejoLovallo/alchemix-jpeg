@@ -7,4 +7,8 @@ interface IJpeg {
         uint256 _amount,
         bool _useInsurance
     ) external;
+
+    function repay(uint256 _nftIndex, uint256 _amount) external;
+
+    function closePosition(uint256 _nftIndex) external;
 }

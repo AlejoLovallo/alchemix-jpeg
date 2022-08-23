@@ -22,14 +22,29 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface IJpegInterface extends ethers.utils.Interface {
   functions: {
     "borrow(uint256,uint256,bool)": FunctionFragment;
+    "closePosition(uint256)": FunctionFragment;
+    "repay(uint256,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "borrow",
     values: [BigNumberish, BigNumberish, boolean]
   ): string;
+  encodeFunctionData(
+    functionFragment: "closePosition",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "repay",
+    values: [BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "borrow", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "closePosition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
 
   events: {};
 }
@@ -84,6 +99,17 @@ export class IJpeg extends BaseContract {
       _useInsurance: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    closePosition(
+      _nftIndex: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    repay(
+      _nftIndex: BigNumberish,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   borrow(
@@ -93,11 +119,33 @@ export class IJpeg extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  closePosition(
+    _nftIndex: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  repay(
+    _nftIndex: BigNumberish,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     borrow(
       _nftIndex: BigNumberish,
       _amount: BigNumberish,
       _useInsurance: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    closePosition(
+      _nftIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    repay(
+      _nftIndex: BigNumberish,
+      _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -111,6 +159,17 @@ export class IJpeg extends BaseContract {
       _useInsurance: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    closePosition(
+      _nftIndex: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    repay(
+      _nftIndex: BigNumberish,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -118,6 +177,17 @@ export class IJpeg extends BaseContract {
       _nftIndex: BigNumberish,
       _amount: BigNumberish,
       _useInsurance: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    closePosition(
+      _nftIndex: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    repay(
+      _nftIndex: BigNumberish,
+      _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
