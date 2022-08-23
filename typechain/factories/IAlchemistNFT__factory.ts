@@ -32,6 +32,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+    ],
+    name: "AdminUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "Alchemist",
@@ -60,6 +73,75 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "nft",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nftId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "pUsdMinted",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "daiDeposited",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "shares",
+        type: "uint256",
+      },
+    ],
+    name: "NFTLocked",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "NFTUnlocked",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "pendingAdmin",
+        type: "address",
+      },
+    ],
+    name: "PendingAdminUpdated",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "acceptAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -72,17 +154,38 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "address",
-        name: "swap",
-        type: "address",
-      },
-      {
         internalType: "uint256",
         name: "amountToBorrow",
         type: "uint256",
       },
     ],
     name: "lockNft",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "value",
+        type: "address",
+      },
+    ],
+    name: "setPendingAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "unlockNFT",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
