@@ -20,28 +20,45 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.UintSet;
     using SafeERC20 for IERC20;
 
+    /// @notice A user account.
     struct Account {
         /// @notices nftIndexes
         EnumerableSetUpgradeable.UintSet nftsDeposited;
     }
 
+    /// @notice Curve Finance data.
     struct CurveData{
         address Curve;
         uint8 pUsdIndex;
     }
 
+    /// @notice Contract admin.
     address public admin;
+    /// @notice Pending admin.
     address public pendingAdmin;
+    /// @notice AlchemistV2 contract.
     address public Alchemist;
+    /// @notice NFTWrapper to wrap NFT´s JPEG supported collections.
     address public NFTWrapper;
+    /// @notice JPEG NFTVault contract.
     address public Jpeg;
+    /// @notice see {{CurveData}}
     CurveData public curveData;
-
+    /// @notice JPEG stable coin contract.
     IERC20 public pUsd;
 
     /// @notice user to nft collection to account data
     mapping(address => mapping(address => Account)) private users;
 
+    /// @dev Only initialize contract
+    ///
+    ///
+    /// @param _alchemist AlchemistV2 contract address.
+    /// @param _nftWrapper NFTWrapper contract address.
+    /// @param _jpeg JPEG contract address.
+    /// @param _pUsd pUSD contract address.
+    /// @param _admin admin contract address.
+    /// @param _curveData CurveData structure.
     function initialize(address _alchemist,
                         address _nftWrapper, 
                         address _jpeg,
@@ -65,13 +82,15 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
 
         emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
     }
-
+    
+    /// @notice see {{AlchemistV2}}
     function setPendingAdmin(address value) external override {
         _onlyAdmin();
         pendingAdmin = value;
         emit PendingAdminUpdated(value);
     }
 
+    /// @notice see {{AlchemistV2}}
     function acceptAdmin() external override {
         _checkState(pendingAdmin != address(0));
 
@@ -87,10 +106,15 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     }
 
 
-    /**
-     * For testing purposes lock will be done only against dai stable coin.
-     * Also for safety we will ask to exchange the 50% of the pUsd minted on borrowing. 
-     */
+    /// @dev Lock NFT in Vault and through Jpeg get a self repaying loan in Alchemix.
+    ///
+    ///
+    /// @param _nft NFT Contract address.
+    /// @param _nftId NFT id.
+    /// @param amountToBorrow amount to borrow in pUSD.
+    /// @param underlyingToken underlying token to deposit in Alchemix and swap in Curve.
+    /// @param yieldToken yield token to be deposited in yearn finance through Alchemix.
+    /// @param curveTokenIndex token index of curve swap pool.
     function lockNft(address _nft,
                      uint256 _nftId,
                      uint256 amountToBorrow,
@@ -138,7 +162,15 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         return shares;
     }  
 
-
+    /// @dev Only initialize contract
+    ///
+    ///
+    /// @param _nft NFT Contract address.
+    /// @param _nftId NFT id.
+    /// @param amountToRepay amount to be repaided in JPEG protocol.
+    /// @param underlyingToken underlying token to be swapped in exchange of pUSD.
+    /// @param yieldToken yield token to be withdrawn from Alchemix.
+    /// @param curveTokenIndex token index of curve swap pool.
     function unlockNFT(address _nft,
                        uint256 _nftId,
                        uint256 amountToRepay,
