@@ -26,6 +26,7 @@ export type { YearnTokenAdapter } from "./YearnTokenAdapter";
 export type { AlchemicTokenV1 } from "./AlchemicTokenV1";
 export type { AlchemicTokenV2 } from "./AlchemicTokenV2";
 export type { AlchemicTokenV2Base } from "./AlchemicTokenV2Base";
+export type { AlchemistJPEG } from "./AlchemistJPEG";
 export type { AlchemistNFT } from "./AlchemistNFT";
 export type { AlchemistV2 } from "./AlchemistV2";
 export type { Multicall } from "./Multicall";
@@ -153,6 +154,7 @@ export { YearnTokenAdapter__factory } from "./factories/YearnTokenAdapter__facto
 export { AlchemicTokenV1__factory } from "./factories/AlchemicTokenV1__factory";
 export { AlchemicTokenV2__factory } from "./factories/AlchemicTokenV2__factory";
 export { AlchemicTokenV2Base__factory } from "./factories/AlchemicTokenV2Base__factory";
+export { AlchemistJPEG__factory } from "./factories/AlchemistJPEG__factory";
 export { AlchemistNFT__factory } from "./factories/AlchemistNFT__factory";
 export { AlchemistV2__factory } from "./factories/AlchemistV2__factory";
 export { Multicall__factory } from "./factories/Multicall__factory";
