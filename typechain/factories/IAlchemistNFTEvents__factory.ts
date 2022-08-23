@@ -14,6 +14,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "admin",
+        type: "address",
+      },
+    ],
+    name: "AdminUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "Alchemist",
@@ -39,6 +52,68 @@ const _abi = [
       },
     ],
     name: "Initialized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "nft",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nftId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "pUsdMinted",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "daiDeposited",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "shares",
+        type: "uint256",
+      },
+    ],
+    name: "NFTLocked",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "NFTUnlocked",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "pendingAdmin",
+        type: "address",
+      },
+    ],
+    name: "PendingAdminUpdated",
     type: "event",
   },
 ];

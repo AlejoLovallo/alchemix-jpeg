@@ -21,11 +21,21 @@ interface IAlchemistNFTEventsInterface extends ethers.utils.Interface {
   functions: {};
 
   events: {
+    "AdminUpdated(address)": EventFragment;
     "Initialized(address,address,address,address)": EventFragment;
+    "NFTLocked(address,address,uint256,uint256,uint256,uint256)": EventFragment;
+    "NFTUnlocked()": EventFragment;
+    "PendingAdminUpdated(address)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AdminUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NFTLocked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NFTUnlocked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PendingAdminUpdated"): EventFragment;
 }
+
+export type AdminUpdatedEvent = TypedEvent<[string] & { admin: string }>;
 
 export type InitializedEvent = TypedEvent<
   [string, string, string, string] & {
@@ -34,6 +44,23 @@ export type InitializedEvent = TypedEvent<
     Jpeg: string;
     Curve: string;
   }
+>;
+
+export type NFTLockedEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    user: string;
+    nft: string;
+    nftId: BigNumber;
+    pUsdMinted: BigNumber;
+    daiDeposited: BigNumber;
+    shares: BigNumber;
+  }
+>;
+
+export type NFTUnlockedEvent = TypedEvent<[] & {}>;
+
+export type PendingAdminUpdatedEvent = TypedEvent<
+  [string] & { pendingAdmin: string }
 >;
 
 export class IAlchemistNFTEvents extends BaseContract {
@@ -84,6 +111,12 @@ export class IAlchemistNFTEvents extends BaseContract {
   callStatic: {};
 
   filters: {
+    "AdminUpdated(address)"(
+      admin?: null
+    ): TypedEventFilter<[string], { admin: string }>;
+
+    AdminUpdated(admin?: null): TypedEventFilter<[string], { admin: string }>;
+
     "Initialized(address,address,address,address)"(
       Alchemist?: string | null,
       NFTWrapper?: null,
@@ -103,6 +136,56 @@ export class IAlchemistNFTEvents extends BaseContract {
       [string, string, string, string],
       { Alchemist: string; NFTWrapper: string; Jpeg: string; Curve: string }
     >;
+
+    "NFTLocked(address,address,uint256,uint256,uint256,uint256)"(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      pUsdMinted?: null,
+      daiDeposited?: null,
+      shares?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        pUsdMinted: BigNumber;
+        daiDeposited: BigNumber;
+        shares: BigNumber;
+      }
+    >;
+
+    NFTLocked(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      pUsdMinted?: null,
+      daiDeposited?: null,
+      shares?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        pUsdMinted: BigNumber;
+        daiDeposited: BigNumber;
+        shares: BigNumber;
+      }
+    >;
+
+    "NFTUnlocked()"(): TypedEventFilter<[], {}>;
+
+    NFTUnlocked(): TypedEventFilter<[], {}>;
+
+    "PendingAdminUpdated(address)"(
+      pendingAdmin?: null
+    ): TypedEventFilter<[string], { pendingAdmin: string }>;
+
+    PendingAdminUpdated(
+      pendingAdmin?: null
+    ): TypedEventFilter<[string], { pendingAdmin: string }>;
   };
 
   estimateGas: {};

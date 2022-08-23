@@ -12,6 +12,7 @@ import "./interfaces/IAlchemistNFT.sol";
 import "./interfaces/IAlchemistV2.sol";
 import "./interfaces/INFTWrapper.sol";
 import "./libraries/Sets.sol";
+import "./base/Errors.sol";
 
 /// @title  AlchemistNFT
 /// @author Alchemix Finance
@@ -32,7 +33,8 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         uint8 pUsdIndex;
     }
 
-    address public owner;
+    address public admin;
+    address public pendingAdmin;
     address immutable public Alchemist;
     address immutable public NFTWrapper;
     address immutable public Jpeg;
@@ -72,21 +74,41 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
     }
 
-    function initialize(address _owner) public initializer{
-        owner = _owner;
+    function initialize(address _admin) public initializer{
+        admin = _admin;
         _setUpCurve();
         _setUpJpeg();
         _setUpAlchemistV2();
     }
 
+    function setPendingAdmin(address value) external override {
+        _onlyAdmin();
+        pendingAdmin = value;
+        emit PendingAdminUpdated(value);
+    }
+
+    function acceptAdmin() external override {
+        _checkState(pendingAdmin != address(0));
+
+        if (msg.sender != pendingAdmin) {
+            revert Unauthorized();
+        }
+
+        admin = pendingAdmin;
+        pendingAdmin = address(0);
+
+        emit AdminUpdated(admin);
+        emit PendingAdminUpdated(address(0));
+    }
+
+
     /**
-     * FOR Testing purposes lock will be done only against dai stable coin.
+     * For testing purposes lock will be done only against dai stable coin.
      * Also for safety we will ask to exchange the 50% of the pUsd minted on borrowing. 
      */
     function lockNft(address _nft,
                      uint256 _nftId,
-                     address swap,
-                     uint256 amountToBorrow) public override{
+                     uint256 amountToBorrow) public override returns(uint256){
         _checkNFT(msg.sender,_nft,_nftId);
 
         //GET NFT
@@ -109,13 +131,24 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         uint256 postDAIBalance = DAI.balanceOf(address(this));
         require(postDAIBalance > preDAIBalance,"PUSD-DAI EXCHANGE WENT WRONG");
 
-        // INTERACTION WITH ALCHEMISTV2
-        IAlchemistV2(Alchemist).depositUnderlying(address(yDAI),
+        // INTERACTION WITH ALCHEMISTV2 VAULT
+        uint256 shares = IAlchemistV2(Alchemist).depositUnderlying(address(yDAI),
                         (postDAIBalance - preDAIBalance),
                         msg.sender,
                         (postDAIBalance - preDAIBalance)
                     );
+        emit NFTLocked(msg.sender,
+                       _nft,
+                       _nftId,
+                       (postPUsdBalance-prePUsdBalance),
+                       (postDAIBalance-preDAIBalance),
+                       shares
+                      );
+        return shares;
+    }  
 
+
+    function unlockNFT() public override {
     }
 
     /**
@@ -132,6 +165,24 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
 
     function _setUpAlchemistV2() internal {
 
+    }
+
+    /// @dev Checks that the `msg.sender` is the administrator.
+    ///
+    /// @dev `msg.sender` must be the administrator or this call will revert with an {Unauthorized} error.
+    function _onlyAdmin() internal view {
+        if (msg.sender != admin) {
+            revert Unauthorized();
+        }
+    }
+
+    /// @dev Checks an expression and reverts with an {IllegalState} error if the expression is {false}.
+    ///
+    /// @param expression The expression to check.
+    function _checkState(bool expression) internal pure {
+        if (!expression) {
+            revert IllegalState();
+        }
     }
 
 

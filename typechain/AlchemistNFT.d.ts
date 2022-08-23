@@ -25,12 +25,16 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     "DAI()": FunctionFragment;
     "Jpeg()": FunctionFragment;
     "NFTWrapper()": FunctionFragment;
+    "acceptAdmin()": FunctionFragment;
+    "admin()": FunctionFragment;
     "curveData()": FunctionFragment;
     "initialize(address)": FunctionFragment;
-    "lockNft(address,uint256,address,uint256)": FunctionFragment;
+    "lockNft(address,uint256,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
-    "owner()": FunctionFragment;
     "pUsd()": FunctionFragment;
+    "pendingAdmin()": FunctionFragment;
+    "setPendingAdmin(address)": FunctionFragment;
+    "unlockNFT()": FunctionFragment;
     "yDAI()": FunctionFragment;
   };
 
@@ -41,24 +45,42 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "NFTWrapper",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "acceptAdmin",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(functionFragment: "curveData", values?: undefined): string;
   encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(
     functionFragment: "lockNft",
-    values: [string, BigNumberish, string, BigNumberish]
+    values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
     values: [string, string, BigNumberish, BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pUsd", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pendingAdmin",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPendingAdmin",
+    values: [string]
+  ): string;
+  encodeFunctionData(functionFragment: "unlockNFT", values?: undefined): string;
   encodeFunctionData(functionFragment: "yDAI", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "Alchemist", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "Jpeg", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "NFTWrapper", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "acceptAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "curveData", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lockNft", data: BytesLike): Result;
@@ -66,16 +88,34 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pUsd", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setPendingAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "unlockNFT", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "yDAI", data: BytesLike): Result;
 
   events: {
+    "AdminUpdated(address)": EventFragment;
     "Initialized(address,address,address,address)": EventFragment;
+    "NFTLocked(address,address,uint256,uint256,uint256,uint256)": EventFragment;
+    "NFTUnlocked()": EventFragment;
+    "PendingAdminUpdated(address)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AdminUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NFTLocked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NFTUnlocked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PendingAdminUpdated"): EventFragment;
 }
+
+export type AdminUpdatedEvent = TypedEvent<[string] & { admin: string }>;
 
 export type InitializedEvent = TypedEvent<
   [string, string, string, string] & {
@@ -84,6 +124,23 @@ export type InitializedEvent = TypedEvent<
     Jpeg: string;
     Curve: string;
   }
+>;
+
+export type NFTLockedEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    user: string;
+    nft: string;
+    nftId: BigNumber;
+    pUsdMinted: BigNumber;
+    daiDeposited: BigNumber;
+    shares: BigNumber;
+  }
+>;
+
+export type NFTUnlockedEvent = TypedEvent<[] & {}>;
+
+export type PendingAdminUpdatedEvent = TypedEvent<
+  [string] & { pendingAdmin: string }
 >;
 
 export class AlchemistNFT extends BaseContract {
@@ -138,6 +195,12 @@ export class AlchemistNFT extends BaseContract {
 
     NFTWrapper(overrides?: CallOverrides): Promise<[string]>;
 
+    acceptAdmin(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<[string]>;
+
     curveData(
       overrides?: CallOverrides
     ): Promise<
@@ -151,14 +214,13 @@ export class AlchemistNFT extends BaseContract {
     >;
 
     initialize(
-      _owner: string,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
-      swap: string,
       amountToBorrow: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -171,9 +233,18 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
     pUsd(overrides?: CallOverrides): Promise<[string]>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<[string]>;
+
+    setPendingAdmin(
+      value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    unlockNFT(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     yDAI(overrides?: CallOverrides): Promise<[string]>;
   };
@@ -185,6 +256,12 @@ export class AlchemistNFT extends BaseContract {
   Jpeg(overrides?: CallOverrides): Promise<string>;
 
   NFTWrapper(overrides?: CallOverrides): Promise<string>;
+
+  acceptAdmin(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  admin(overrides?: CallOverrides): Promise<string>;
 
   curveData(
     overrides?: CallOverrides
@@ -199,14 +276,13 @@ export class AlchemistNFT extends BaseContract {
   >;
 
   initialize(
-    _owner: string,
+    _admin: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   lockNft(
     _nft: string,
     _nftId: BigNumberish,
-    swap: string,
     amountToBorrow: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -219,9 +295,18 @@ export class AlchemistNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  owner(overrides?: CallOverrides): Promise<string>;
-
   pUsd(overrides?: CallOverrides): Promise<string>;
+
+  pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+  setPendingAdmin(
+    value: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  unlockNFT(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   yDAI(overrides?: CallOverrides): Promise<string>;
 
@@ -233,6 +318,10 @@ export class AlchemistNFT extends BaseContract {
     Jpeg(overrides?: CallOverrides): Promise<string>;
 
     NFTWrapper(overrides?: CallOverrides): Promise<string>;
+
+    acceptAdmin(overrides?: CallOverrides): Promise<void>;
+
+    admin(overrides?: CallOverrides): Promise<string>;
 
     curveData(
       overrides?: CallOverrides
@@ -246,15 +335,14 @@ export class AlchemistNFT extends BaseContract {
       }
     >;
 
-    initialize(_owner: string, overrides?: CallOverrides): Promise<void>;
+    initialize(_admin: string, overrides?: CallOverrides): Promise<void>;
 
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
-      swap: string,
       amountToBorrow: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     onERC721Received(
       arg0: string,
@@ -264,14 +352,24 @@ export class AlchemistNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    owner(overrides?: CallOverrides): Promise<string>;
-
     pUsd(overrides?: CallOverrides): Promise<string>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<string>;
+
+    setPendingAdmin(value: string, overrides?: CallOverrides): Promise<void>;
+
+    unlockNFT(overrides?: CallOverrides): Promise<void>;
 
     yDAI(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
+    "AdminUpdated(address)"(
+      admin?: null
+    ): TypedEventFilter<[string], { admin: string }>;
+
+    AdminUpdated(admin?: null): TypedEventFilter<[string], { admin: string }>;
+
     "Initialized(address,address,address,address)"(
       Alchemist?: string | null,
       NFTWrapper?: null,
@@ -291,6 +389,56 @@ export class AlchemistNFT extends BaseContract {
       [string, string, string, string],
       { Alchemist: string; NFTWrapper: string; Jpeg: string; Curve: string }
     >;
+
+    "NFTLocked(address,address,uint256,uint256,uint256,uint256)"(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      pUsdMinted?: null,
+      daiDeposited?: null,
+      shares?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        pUsdMinted: BigNumber;
+        daiDeposited: BigNumber;
+        shares: BigNumber;
+      }
+    >;
+
+    NFTLocked(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      pUsdMinted?: null,
+      daiDeposited?: null,
+      shares?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        pUsdMinted: BigNumber;
+        daiDeposited: BigNumber;
+        shares: BigNumber;
+      }
+    >;
+
+    "NFTUnlocked()"(): TypedEventFilter<[], {}>;
+
+    NFTUnlocked(): TypedEventFilter<[], {}>;
+
+    "PendingAdminUpdated(address)"(
+      pendingAdmin?: null
+    ): TypedEventFilter<[string], { pendingAdmin: string }>;
+
+    PendingAdminUpdated(
+      pendingAdmin?: null
+    ): TypedEventFilter<[string], { pendingAdmin: string }>;
   };
 
   estimateGas: {
@@ -302,17 +450,22 @@ export class AlchemistNFT extends BaseContract {
 
     NFTWrapper(overrides?: CallOverrides): Promise<BigNumber>;
 
+    acceptAdmin(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    admin(overrides?: CallOverrides): Promise<BigNumber>;
+
     curveData(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
-      _owner: string,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
-      swap: string,
       amountToBorrow: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -325,9 +478,18 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
     pUsd(overrides?: CallOverrides): Promise<BigNumber>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+
+    setPendingAdmin(
+      value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    unlockNFT(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     yDAI(overrides?: CallOverrides): Promise<BigNumber>;
   };
@@ -341,17 +503,22 @@ export class AlchemistNFT extends BaseContract {
 
     NFTWrapper(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    acceptAdmin(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     curveData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
-      _owner: string,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     lockNft(
       _nft: string,
       _nftId: BigNumberish,
-      swap: string,
       amountToBorrow: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -364,9 +531,18 @@ export class AlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     pUsd(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pendingAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setPendingAdmin(
+      value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    unlockNFT(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     yDAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
