@@ -24,7 +24,7 @@ interface IAlchemistNFTEventsInterface extends ethers.utils.Interface {
     "AdminUpdated(address)": EventFragment;
     "Initialized(address,address,address,address)": EventFragment;
     "NFTLocked(address,address,uint256,uint256,uint256,uint256)": EventFragment;
-    "NFTUnlocked()": EventFragment;
+    "NFTUnlocked(address,address,uint256,uint256)": EventFragment;
     "PendingAdminUpdated(address)": EventFragment;
   };
 
@@ -57,7 +57,14 @@ export type NFTLockedEvent = TypedEvent<
   }
 >;
 
-export type NFTUnlockedEvent = TypedEvent<[] & {}>;
+export type NFTUnlockedEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber] & {
+    user: string;
+    nft: string;
+    nftId: BigNumber;
+    alchemixTokensRepaid: BigNumber;
+  }
+>;
 
 export type PendingAdminUpdatedEvent = TypedEvent<
   [string] & { pendingAdmin: string }
@@ -175,9 +182,35 @@ export class IAlchemistNFTEvents extends BaseContract {
       }
     >;
 
-    "NFTUnlocked()"(): TypedEventFilter<[], {}>;
+    "NFTUnlocked(address,address,uint256,uint256)"(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
-    NFTUnlocked(): TypedEventFilter<[], {}>;
+    NFTUnlocked(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
     "PendingAdminUpdated(address)"(
       pendingAdmin?: null

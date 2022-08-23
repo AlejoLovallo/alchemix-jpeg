@@ -16,16 +16,6 @@ interface IAlchemistNFTEvents {
     /// @param admin The address of the administrator.
     event AdminUpdated(address admin);
 
-    /**
-     * msg.sender,
-                       _nft,
-                       _nftId,
-                       (postPUsdBalance-prePUsdBalance),
-                       (postDAIBalance-preDAIBalance),
-                       shares
-     */
-
-
     /// @notice
     event NFTLocked(address indexed user, 
                     address indexed nft, 
@@ -36,5 +26,9 @@ interface IAlchemistNFTEvents {
     );
 
     /// @notice
-    event NFTUnlocked();
+    event NFTUnlocked(address indexed user,
+                      address indexed nft,
+                      uint256 nftId,
+                      uint256 alchemixTokensRepaid
+    );
 }

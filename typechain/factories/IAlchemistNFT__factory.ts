@@ -117,7 +117,32 @@ const _abi = [
   },
   {
     anonymous: false,
-    inputs: [],
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "nft",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "nftId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "alchemixTokensRepaid",
+        type: "uint256",
+      },
+    ],
     name: "NFTUnlocked",
     type: "event",
   },
@@ -199,7 +224,38 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_nft",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_nftId",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "amountToBorrow",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "underlyingToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "yieldToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "curveTokenIndex",
+        type: "uint256",
+      },
+    ],
     name: "unlockNFT",
     outputs: [],
     stateMutability: "nonpayable",

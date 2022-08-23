@@ -24,7 +24,7 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     "acceptAdmin()": FunctionFragment;
     "lockNft(address,uint256,uint256,address,address,uint256)": FunctionFragment;
     "setPendingAdmin(address)": FunctionFragment;
-    "unlockNFT()": FunctionFragment;
+    "unlockNFT(address,uint256,uint256,address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -39,7 +39,10 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "setPendingAdmin",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "unlockNFT", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "unlockNFT",
+    values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "acceptAdmin",
@@ -56,7 +59,7 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     "AdminUpdated(address)": EventFragment;
     "Initialized(address,address,address,address)": EventFragment;
     "NFTLocked(address,address,uint256,uint256,uint256,uint256)": EventFragment;
-    "NFTUnlocked()": EventFragment;
+    "NFTUnlocked(address,address,uint256,uint256)": EventFragment;
     "PendingAdminUpdated(address)": EventFragment;
   };
 
@@ -89,7 +92,14 @@ export type NFTLockedEvent = TypedEvent<
   }
 >;
 
-export type NFTUnlockedEvent = TypedEvent<[] & {}>;
+export type NFTUnlockedEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber] & {
+    user: string;
+    nft: string;
+    nftId: BigNumber;
+    alchemixTokensRepaid: BigNumber;
+  }
+>;
 
 export type PendingAdminUpdatedEvent = TypedEvent<
   [string] & { pendingAdmin: string }
@@ -159,6 +169,12 @@ export class IAlchemistNFT extends BaseContract {
     ): Promise<ContractTransaction>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -183,6 +199,12 @@ export class IAlchemistNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   unlockNFT(
+    _nft: string,
+    _nftId: BigNumberish,
+    amountToBorrow: BigNumberish,
+    underlyingToken: string,
+    yieldToken: string,
+    curveTokenIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -201,7 +223,15 @@ export class IAlchemistNFT extends BaseContract {
 
     setPendingAdmin(value: string, overrides?: CallOverrides): Promise<void>;
 
-    unlockNFT(overrides?: CallOverrides): Promise<void>;
+    unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -269,9 +299,35 @@ export class IAlchemistNFT extends BaseContract {
       }
     >;
 
-    "NFTUnlocked()"(): TypedEventFilter<[], {}>;
+    "NFTUnlocked(address,address,uint256,uint256)"(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
-    NFTUnlocked(): TypedEventFilter<[], {}>;
+    NFTUnlocked(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
     "PendingAdminUpdated(address)"(
       pendingAdmin?: null
@@ -303,6 +359,12 @@ export class IAlchemistNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -328,6 +390,12 @@ export class IAlchemistNFT extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToBorrow: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

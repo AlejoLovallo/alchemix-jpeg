@@ -27,13 +27,13 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     "acceptAdmin()": FunctionFragment;
     "admin()": FunctionFragment;
     "curveData()": FunctionFragment;
-    "initialize(address)": FunctionFragment;
+    "initialize(address,address,address,address,address,(address,uint8))": FunctionFragment;
     "lockNft(address,uint256,uint256,address,address,uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "pUsd()": FunctionFragment;
     "pendingAdmin()": FunctionFragment;
     "setPendingAdmin(address)": FunctionFragment;
-    "unlockNFT()": FunctionFragment;
+    "unlockNFT(address,uint256,uint256,address,address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "Alchemist", values?: undefined): string;
@@ -48,7 +48,17 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(functionFragment: "curveData", values?: undefined): string;
-  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "initialize",
+    values: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      { Curve: string; pUsdIndex: BigNumberish }
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "lockNft",
     values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
@@ -66,7 +76,10 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "setPendingAdmin",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "unlockNFT", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "unlockNFT",
+    values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "Alchemist", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "Jpeg", data: BytesLike): Result;
@@ -98,7 +111,7 @@ interface AlchemistNFTInterface extends ethers.utils.Interface {
     "AdminUpdated(address)": EventFragment;
     "Initialized(address,address,address,address)": EventFragment;
     "NFTLocked(address,address,uint256,uint256,uint256,uint256)": EventFragment;
-    "NFTUnlocked()": EventFragment;
+    "NFTUnlocked(address,address,uint256,uint256)": EventFragment;
     "PendingAdminUpdated(address)": EventFragment;
   };
 
@@ -131,7 +144,14 @@ export type NFTLockedEvent = TypedEvent<
   }
 >;
 
-export type NFTUnlockedEvent = TypedEvent<[] & {}>;
+export type NFTUnlockedEvent = TypedEvent<
+  [string, string, BigNumber, BigNumber] & {
+    user: string;
+    nft: string;
+    nftId: BigNumber;
+    alchemixTokensRepaid: BigNumber;
+  }
+>;
 
 export type PendingAdminUpdatedEvent = TypedEvent<
   [string] & { pendingAdmin: string }
@@ -198,7 +218,12 @@ export class AlchemistNFT extends BaseContract {
     ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
     initialize(
+      _alchemist: string,
+      _nftWrapper: string,
+      _jpeg: string,
+      _pUsd: string,
       _admin: string,
+      _curveData: { Curve: string; pUsdIndex: BigNumberish },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -230,6 +255,12 @@ export class AlchemistNFT extends BaseContract {
     ): Promise<ContractTransaction>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToRepay: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -251,7 +282,12 @@ export class AlchemistNFT extends BaseContract {
   ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
   initialize(
+    _alchemist: string,
+    _nftWrapper: string,
+    _jpeg: string,
+    _pUsd: string,
     _admin: string,
+    _curveData: { Curve: string; pUsdIndex: BigNumberish },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -283,6 +319,12 @@ export class AlchemistNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   unlockNFT(
+    _nft: string,
+    _nftId: BigNumberish,
+    amountToRepay: BigNumberish,
+    underlyingToken: string,
+    yieldToken: string,
+    curveTokenIndex: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -301,7 +343,15 @@ export class AlchemistNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string, number] & { Curve: string; pUsdIndex: number }>;
 
-    initialize(_admin: string, overrides?: CallOverrides): Promise<void>;
+    initialize(
+      _alchemist: string,
+      _nftWrapper: string,
+      _jpeg: string,
+      _pUsd: string,
+      _admin: string,
+      _curveData: { Curve: string; pUsdIndex: BigNumberish },
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     lockNft(
       _nft: string,
@@ -327,7 +377,15 @@ export class AlchemistNFT extends BaseContract {
 
     setPendingAdmin(value: string, overrides?: CallOverrides): Promise<void>;
 
-    unlockNFT(overrides?: CallOverrides): Promise<void>;
+    unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToRepay: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -395,9 +453,35 @@ export class AlchemistNFT extends BaseContract {
       }
     >;
 
-    "NFTUnlocked()"(): TypedEventFilter<[], {}>;
+    "NFTUnlocked(address,address,uint256,uint256)"(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
-    NFTUnlocked(): TypedEventFilter<[], {}>;
+    NFTUnlocked(
+      user?: string | null,
+      nft?: string | null,
+      nftId?: null,
+      alchemixTokensRepaid?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, BigNumber],
+      {
+        user: string;
+        nft: string;
+        nftId: BigNumber;
+        alchemixTokensRepaid: BigNumber;
+      }
+    >;
 
     "PendingAdminUpdated(address)"(
       pendingAdmin?: null
@@ -424,7 +508,12 @@ export class AlchemistNFT extends BaseContract {
     curveData(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
+      _alchemist: string,
+      _nftWrapper: string,
+      _jpeg: string,
+      _pUsd: string,
       _admin: string,
+      _curveData: { Curve: string; pUsdIndex: BigNumberish },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -456,6 +545,12 @@ export class AlchemistNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToRepay: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -476,7 +571,12 @@ export class AlchemistNFT extends BaseContract {
     curveData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
+      _alchemist: string,
+      _nftWrapper: string,
+      _jpeg: string,
+      _pUsd: string,
       _admin: string,
+      _curveData: { Curve: string; pUsdIndex: BigNumberish },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -508,6 +608,12 @@ export class AlchemistNFT extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     unlockNFT(
+      _nft: string,
+      _nftId: BigNumberish,
+      amountToRepay: BigNumberish,
+      underlyingToken: string,
+      yieldToken: string,
+      curveTokenIndex: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

@@ -32,22 +32,22 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
 
     address public admin;
     address public pendingAdmin;
-    address immutable public Alchemist;
-    address immutable public NFTWrapper;
-    address immutable public Jpeg;
+    address public Alchemist;
+    address public NFTWrapper;
+    address public Jpeg;
     CurveData public curveData;
 
-    IERC20 immutable public pUsd;
+    IERC20 public pUsd;
 
     /// @notice user to nft collection to account data
     mapping(address => mapping(address => Account)) private users;
 
-    constructor(address _alchemist,
-                address _nftWrapper, 
-                address _jpeg,
-                address _pUsd,
-                CurveData memory _curveData
-                ) initializer {
+    function initialize(address _alchemist,
+                        address _nftWrapper, 
+                        address _jpeg,
+                        address _pUsd,
+                        address _admin,
+                        CurveData memory _curveData) public initializer{
         Alchemist = _alchemist;
         NFTWrapper = _nftWrapper;
         Jpeg = _jpeg;
@@ -57,15 +57,13 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         });
 
         pUsd = IERC20(_pUsd);
-
-        emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
-    }
-
-    function initialize(address _admin) public initializer{
         admin = _admin;
+
         _setUpCurve();
         _setUpJpeg();
         _setUpAlchemistV2();
+
+        emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
     }
 
     function setPendingAdmin(address value) external override {
@@ -119,7 +117,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
                         0
                         );
         uint256 postStableTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
-        require(postStableTokenBalance > preStableTokenBalance,"PUSD-DAI EXCHANGE WENT WRONG");
+        require(postStableTokenBalance > preStableTokenBalance,"PUSD-UNDERLYING_TOKEN EXCHANGE WENT WRONG");
 
         // INTERACTION WITH ALCHEMISTV2 VAULT
         uint256 shares = IAlchemistV2(Alchemist).depositUnderlying(yieldToken,
@@ -141,7 +139,63 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
     }  
 
 
-    function unlockNFT() public override {
+    function unlockNFT(address _nft,
+                       uint256 _nftId,
+                       uint256 amountToRepay,
+                       address underlyingToken,
+                       address yieldToken,
+                       uint256 curveTokenIndex) public override {
+        _checkNFT(msg.sender,_nft,_nftId);
+
+        //FIRST TRANSFER THE UNDERLYING TOKEN TO THE CONTRACT
+        uint256 preUnderlyingTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
+        IERC20(underlyingToken).safeTransferFrom(msg.sender,address(this),amountToRepay);
+        uint256 postUnderlyingTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
+        require(postUnderlyingTokenBalance > preUnderlyingTokenBalance, "TRANSFER UNDERLYING TOKEN WENT WRONG");
+
+        //REPAY ALCHEMIXV2  
+        uint256 tokensRepaid = IAlchemistV2(Alchemist).repay(
+                            underlyingToken,
+                            amountToRepay,
+                            msg.sender
+        );
+
+        (uint256 shares,) = IAlchemistV2(Alchemist).positions(msg.sender,yieldToken);
+
+        //WITHDRAW UNDERLYING
+        preUnderlyingTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
+        uint256 pps = IAlchemistV2(Alchemist).getUnderlyingTokensPerShare(yieldToken);
+        IAlchemistV2(Alchemist).withdrawUnderlyingFrom(msg.sender,
+                                                            yieldToken,
+                                                            (shares / pps),
+                                                            address(this),
+                                                            1
+                                    );
+        postUnderlyingTokenBalance = IERC20(underlyingToken).balanceOf(address(this));
+        require(postUnderlyingTokenBalance > preUnderlyingTokenBalance, "WITHDRAW UNDERLYING TOKEN WENT WRONG");
+
+        //SWAP IN CURVE
+        uint256 prePUsdBalance = pUsd.balanceOf(address(this));
+        ICurve(curveData.Curve).exchange(curveTokenIndex,
+                        curveData.pUsdIndex,
+                        ( (postUnderlyingTokenBalance - preUnderlyingTokenBalance) /2),
+                        0
+                        );
+        uint256 postPUsdBalance = pUsd.balanceOf(address(this));
+        require(postPUsdBalance > prePUsdBalance,"UNDERLYING_TOKEN-PUSD EXCHANGE WENT WRONG");
+
+        //REPAY IN JPEG AND GET NFT BACK
+        IJpeg(Jpeg).repay(_nftId,postPUsdBalance);
+        IJpeg(Jpeg).closePosition(_nftId);
+
+        //FINALLY GET NFT BACK
+        INFTWrapper(NFTWrapper).safeTransferFrom(address(this),msg.sender,_nftId);
+
+        emit NFTUnlocked(msg.sender,
+                         _nft,
+                         _nftId,
+                         tokensRepaid
+        );
     }
 
     /**
