@@ -124,7 +124,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         // INTERACTION WITH ALCHEMISTV2 VAULT
         uint256 shares = IAlchemistV2(Alchemist).depositUnderlying(yieldToken,
                         (postStableTokenBalance - preStableTokenBalance),
-                        address(this),
+                        msg.sender,
                         (postStableTokenBalance - preStableTokenBalance)
                     );
         //MINT allUSD
