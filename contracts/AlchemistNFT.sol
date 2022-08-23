@@ -129,7 +129,7 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
                     );
         //MINT allUSD
         IAlchemistV2(Alchemist).mintFrom(msg.sender,(shares/2),msg.sender);
-
+        
         emit NFTLocked(msg.sender,
                        _nft,
                        _nftId,
