@@ -24,6 +24,9 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     "acceptAdmin()": FunctionFragment;
     "lockNft(address,uint256,uint256,address,address,uint256)": FunctionFragment;
     "setPendingAdmin(address)": FunctionFragment;
+    "setUpAlchemistV2(address,uint256)": FunctionFragment;
+    "setUpCurve(address,uint256)": FunctionFragment;
+    "setUpJpeg(address)": FunctionFragment;
     "unlockNFT(address,uint256,uint256,address,address,uint256)": FunctionFragment;
   };
 
@@ -40,6 +43,15 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setUpAlchemistV2",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setUpCurve",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "setUpJpeg", values: [string]): string;
+  encodeFunctionData(
     functionFragment: "unlockNFT",
     values: [string, BigNumberish, BigNumberish, string, string, BigNumberish]
   ): string;
@@ -53,6 +65,12 @@ interface IAlchemistNFTInterface extends ethers.utils.Interface {
     functionFragment: "setPendingAdmin",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setUpAlchemistV2",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setUpCurve", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setUpJpeg", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "unlockNFT", data: BytesLike): Result;
 
   events: {
@@ -168,6 +186,23 @@ export class IAlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setUpAlchemistV2(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setUpCurve(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setUpJpeg(
+      nft: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     unlockNFT(
       _nft: string,
       _nftId: BigNumberish,
@@ -198,6 +233,23 @@ export class IAlchemistNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setUpAlchemistV2(
+    token: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setUpCurve(
+    token: string,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setUpJpeg(
+    nft: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   unlockNFT(
     _nft: string,
     _nftId: BigNumberish,
@@ -222,6 +274,20 @@ export class IAlchemistNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     setPendingAdmin(value: string, overrides?: CallOverrides): Promise<void>;
+
+    setUpAlchemistV2(
+      token: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setUpCurve(
+      token: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setUpJpeg(nft: string, overrides?: CallOverrides): Promise<void>;
 
     unlockNFT(
       _nft: string,
@@ -358,6 +424,23 @@ export class IAlchemistNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setUpAlchemistV2(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setUpCurve(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setUpJpeg(
+      nft: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     unlockNFT(
       _nft: string,
       _nftId: BigNumberish,
@@ -386,6 +469,23 @@ export class IAlchemistNFT extends BaseContract {
 
     setPendingAdmin(
       value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setUpAlchemistV2(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setUpCurve(
+      token: string,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setUpJpeg(
+      nft: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

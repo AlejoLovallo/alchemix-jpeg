@@ -59,10 +59,6 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         pUsd = IERC20(_pUsd);
         admin = _admin;
 
-        _setUpCurve();
-        _setUpJpeg();
-        _setUpAlchemistV2();
-
         emit Initialized(_alchemist,_nftWrapper,_jpeg,address(curveData.Curve));
     }
 
@@ -198,20 +194,17 @@ contract AlchemistNFT is Initializable, IAlchemistNFT, IERC721Receiver{
         );
     }
 
-    /**
-     * TODO: APPROVE CONTRACTS WITH AMOUNTS TO ENABLE PROTOCOLS INTERACTIONS
-     */
-
-    function _setUpJpeg() internal {
-
+    function setUpJpeg(address nft) external override {
+        INFTWrapper(NFTWrapper).setApprovalForAll(nft,true);
     }
 
-    function _setUpCurve() internal {
-
+    function setUpCurve(address token, uint256 amount) external override{
+        IERC20(token).safeApprove(curveData.Curve,amount);
     }
 
-    function _setUpAlchemistV2() internal {
-
+    function setUpAlchemistV2(address token,uint256 amount) external override{
+        _onlyAdmin();
+        IERC20(token).safeApprove(Alchemist,amount);
     }
 
     /// @dev Checks that the `msg.sender` is the administrator.
