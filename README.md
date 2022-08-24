@@ -35,8 +35,18 @@ For instance, the following diagram shows a deposits flow where the user gets DA
 ![](./img/jpeg-withdraw-flow.png)
 
 ### Drops
-
+We also added https://drops.co/lending/
 This integration works quite similar to the previous one. The main difference is the Users gets directly USDC from the Drops platform and swap is not required.
+You can see the [contract] (https://github.com/AlejoLovallo/alchemix-nft/blob/master/contracts/challenge/AlchemicDropsNft.sol)
+And the [tests] (https://github.com/AlejoLovallo/alchemix-nft/blob/master/test/Challenge.spec.ts)
+***Important***
+Use the .env with the following values when running `yarn test` otherwise it won't work as we are using a fork from ethereum mainnet
+
+```
+ALCHEMY_API_KEY=<YOUR KEY>
+FORK=true
+FORK_BLOCK=15390000
+```
 
 ### Implementation
 
