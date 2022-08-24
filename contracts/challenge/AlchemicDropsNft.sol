@@ -95,7 +95,7 @@ contract AlchemicDropsNFT is Initializable, IERC721Receiver{
 
 
     /**
-     * For testing purposes lock will be done only against dai stable coin.
+     * For testing purposes lock will be done only against USDC stable coin.
      * Also for safety we will ask to exchange the 50% of the pUsd minted on borrowing. 
      */
     function lockNft(address _nft,
@@ -136,7 +136,43 @@ contract AlchemicDropsNFT is Initializable, IERC721Receiver{
     }  
 
 
-    function unlockNFT() public  {
+    /* repay the debt and redeem the NFT used as colateral */
+    function unlockNFT(
+        address _nft,
+        uint _nftId,
+        address dropsNftMarket // TODO instead of asking for this parameter map it to the nft address
+     ) public {
+        _checkNFT(msg.sender,_nft,_nftId);
+
+        // TODO we should separate the debts for each user in the contract or clone it for each user so they have it's own contract
+        uint amountToRepay = dropsUsdcMarket.borrowBalanceCurrent(address(this));
+        console.log(amountToRepay);
+        Usdc.safeTransferFrom(msg.sender, address(this), amountToRepay);
+
+        //REPAY ALCHEMIXV2  
+        Alchemist.repay(
+            address(Usdc),
+            amountToRepay,
+            address(this)
+        );
+
+        (uint shares,) = IAlchemistV2(Alchemist).positions(address(this),usdcYieldToken);
+        uint pps = Alchemist.getUnderlyingTokensPerShare(usdcYieldToken);
+        uint amountWithdrawn = Alchemist.withdrawUnderlying(usdcYieldToken, shares / pps, address(this), 1);
+        // TODO we only support withrawing all the shares
+
+        if(amountWithdrawn > amountToRepay) {
+             Usdc.safeTransferFrom(address(this), msg.sender, amountWithdrawn - amountToRepay);
+        }
+
+        //REPAY IN JPEG AND GET NFT BACK
+        uint errorCode = dropsUsdcMarket.repayBorrow(amountToRepay);
+        require(errorCode == 0, "Drops Market repay borrow error");
+        CErc721Interface(dropsNftMarket).redeem(_nftId);
+
+        //FINALLY GET NFT BACK
+        INFTWrapper(_nft).safeTransferFrom(address(this), msg.sender, _nftId);
+
     }
 
     /**
