@@ -50,7 +50,7 @@ FORK_BLOCK=15390000
 
 ### Implementation
 
-* [AlchemistJPEG](./contracts/AlchemistNFT.sol)
+* [AlchemistJPEG](./contracts/AlchemistJPEG.sol)
 * [AlchemistDrops](./contracts/challenge/AlchemicDropsNft.sol)
 
 ## ToDo
