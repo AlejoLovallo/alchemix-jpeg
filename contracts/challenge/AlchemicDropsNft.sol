@@ -122,7 +122,7 @@ contract AlchemicDropsNFT is Initializable, IERC721Receiver{
         uint256 shares = Alchemist.depositUnderlying(
             usdcYieldToken,
             amountToBorrow,
-             msg.sender,
+            address(this),
             1 // TODO use a setter and calculate this 
         );
 
