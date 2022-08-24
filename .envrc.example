@@ -1,0 +1,5 @@
+export ETHERSCAN_API_KEY=''
+export ALCHEMY_API_KEY=''
+export INFURA_ID=''
+export FORK_BLOCK=15390000
+export FORK=true

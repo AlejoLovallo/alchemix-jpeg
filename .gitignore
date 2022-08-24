@@ -24,3 +24,5 @@ testnet/testnet-node-log.txt
 .vscode
 
 artifacts
+
+.envrc
