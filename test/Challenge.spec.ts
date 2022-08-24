@@ -8,16 +8,23 @@ import {
   CErc20Interface__factory,
   IERC20Minimal__factory,
   IAlchemistV2__factory,
+  IWhitelist__factory,
   IERC721Metadata,
   IERC20Minimal,
   IAlchemistV2,
+  AlchemicDropsNFT,
+  IWhitelist,
 } from "../typechain";
+import { parseEther, parseUnits } from "ethers/lib/utils";
 
-describe.only("Challenge to run as mainnet fork", () => {
+describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
   let impersonatedSigner: SignerWithAddress;
+  let impersonatedOwner: SignerWithAddress;
   let nftContract: IERC721Metadata;
   let usdcContract: IERC20Minimal;
+  let debtTokenContract: IERC20Minimal;
   let alchemistContract: IAlchemistV2;
+  let whitelistContract: IWhitelist;
 
   // https://etherscan.io/address/0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D
   const baycAddress = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
@@ -32,6 +39,9 @@ describe.only("Challenge to run as mainnet fork", () => {
 
   // https://alchemix-finance.gitbook.io/user-docs/contracts
   const alchemistAddress = "0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd";
+  // https://etherscan.io/address/0x78537a6ceba16f412e123a90472c6e0e9a8f1132#readContract
+  const whitelistAddress = "0x78537a6ceba16f412e123a90472c6e0e9a8f1132";
+  const debtToken = "0xbc6da0fe9ad5f3b0d58160288917aa56653660e9";
 
   // Obtained from https://etherscan.io/address/0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd#readProxyContract
   // https://etherscan.io/address/0xa354f35829ae975e850e23e9615b11da1b3dc4de
@@ -39,14 +49,19 @@ describe.only("Challenge to run as mainnet fork", () => {
 
   before(async () => {
     // owner of https://opensea.io/assets/ethereum/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d/3105
-    const address = "0xe89552758DEcfa70f60611413a848055842289fD";
+    const nftHolder = "0xe89552758DEcfa70f60611413a848055842289fD";
+    const whitelistOwner = "0x9e2b6378ee8ad2a4a95fe481d63caba8fb0ebbf9";
     // https://hardhat.org/hardhat-network/docs/guides/forking-other-networks#impersonating-accounts
     await network.provider.request({
       method: "hardhat_impersonateAccount",
-      params: [address],
+      params: [nftHolder],
     });
-    impersonatedSigner = await ethers.getSigner(address);
-
+    impersonatedSigner = await ethers.getSigner(nftHolder);
+    await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [whitelistOwner],
+    });
+    impersonatedOwner = await ethers.getSigner(whitelistOwner);
     nftContract = IERC721Metadata__factory.connect(
       baycAddress,
       impersonatedSigner
@@ -57,13 +72,78 @@ describe.only("Challenge to run as mainnet fork", () => {
       impersonatedSigner
     );
 
+    debtTokenContract = IERC20Minimal__factory.connect(
+      debtToken,
+      impersonatedSigner
+    );
+
     alchemistContract = IAlchemistV2__factory.connect(
       alchemistAddress,
       impersonatedSigner
     );
+
+    whitelistContract = IWhitelist__factory.connect(
+      whitelistAddress,
+      impersonatedOwner
+    );
   });
 
-  describe("Do steps off chain", () => {
+  describe("Do steps on chain", () => {
+    it("check the Bored Ape", async () => {
+      const dropsFactory = await ethers.getContractFactory("AlchemicDropsNFT");
+      let alchemicDropsNFT = (await dropsFactory.deploy()) as AlchemicDropsNFT;
+      const [owner] = await ethers.getSigners();
+      await alchemicDropsNFT.initialize(
+        owner.address,
+        alchemistAddress,
+        dropsComptroller,
+        usdcAddress,
+        yieldTokenAddress,
+        usdcCErc20,
+        [dropsCErc721]
+      );
+      const borrowAmount = "1000000";
+      await owner.sendTransaction({
+        to: impersonatedSigner.address,
+        value: parseUnits("10", "ether"),
+      });
+
+      // Approve the token before minting
+      await nftContract.approve(alchemicDropsNFT.address, nftId);
+
+      alchemicDropsNFT = alchemicDropsNFT.connect(impersonatedSigner);
+
+      // Add to whitelist
+      whitelistContract.add(alchemicDropsNFT.address);
+
+      await usdcContract.approve(
+        alchemistContract.address,
+        ethers.constants.MaxUint256
+      );
+
+      await alchemicDropsNFT.lockNft(
+        baycAddress,
+        nftId,
+        borrowAmount,
+        dropsCErc721
+      );
+      const ownerOfNft = await nftContract.ownerOf(nftId);
+      expect(dropsCErc721).eql(ownerOfNft);
+
+      const { debt } = await alchemistContract.accounts(
+        alchemicDropsNFT.address
+      );
+      console.log("debt", debt.toString());
+      expect(debt).gt(0);
+
+      const balance = await debtTokenContract.balanceOf(
+        impersonatedSigner.address
+      );
+      console.log("debt token balance", (await balance).toString());
+      expect(balance).gt(0);
+    });
+  });
+  describe.skip("Do steps off chain", () => {
     it("check the Bored Ape", async () => {
       const owner = await nftContract.ownerOf(nftId);
       const address = await impersonatedSigner.getAddress();
@@ -137,13 +217,20 @@ describe.only("Challenge to run as mainnet fork", () => {
         1
       );
 
-      const shares = await alchemistContract.positions(
+      const [shares] = await alchemistContract.positions(
         impersonatedSigner.address,
         yieldTokenAddress
       );
       console.log("shares", shares.toString());
 
-      // TODO mint debt and move this to solidity
+      // TODO move this to solidity
+      await alchemistContract.mint(shares.div(2), impersonatedSigner.address);
+
+      const { debt } = await alchemistContract.accounts(
+        impersonatedSigner.address
+      );
+      console.log("debt", debt);
+      expect(shares.div(2).toString()).eql(debt.toString());
     });
   });
 });

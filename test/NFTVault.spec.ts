@@ -41,6 +41,7 @@ describe.only("Challenge to run as mainnet fork", () => {
   const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
   before(async () => {
+    console.log('------- EJECUTANDO ESTO ------');
     const nftOwner = "0x271c7603AAf2BD8F68e8Ca60f4A4F22c4920259f";
     await network.provider.request({
       method: "hardhat_impersonateAccount",
