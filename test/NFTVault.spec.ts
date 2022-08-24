@@ -9,22 +9,28 @@ import {
   IERC20Minimal,
   IAlchemistV2,
   IAlchemistNFT,
+  INFTWrapper,
+  IWhitelist,
+  IWhitelist__factory
 } from "../typechain";
 import { AlchemistJPEG } from "../typechain/AlchemistJPEG";
 
 describe.only("Challenge to run as mainnet fork", () => {
   let impersonatedSigner: SignerWithAddress;
+  let impersonatedOwner: SignerWithAddress;
   let nftContract: IERC721Metadata;
   let daiContract: IERC20Minimal;
   let alchemistContract: IAlchemistV2;
   let alchemistNFTVault: AlchemistJPEG;
+  let nftWrapper: INFTWrapper;
+  let whitelistContract: IWhitelist;
 
   /***
    * JPEG ADDRESSES
    */
-  //https://opensea.io/assets/ethereum/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d/2936
+  // https://opensea.io/assets/ethereum/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d/2936
   const nftId = "2936";
-  //https://etherscan.io/address/0x271c7603aaf2bd8f68e8ca60f4a4f22c4920259f
+  // https://etherscan.io/address/0x271c7603aaf2bd8f68e8ca60f4a4f22c4920259f
   const BAYCNFTVault = "0x271c7603aaf2bd8f68e8ca60f4a4f22c4920259f";
   // https://etherscan.io/token/0x466a756E9A7401B5e2444a3fCB3c2C12FBEa0a54
   const pUSD = "0x466a756E9A7401B5e2444a3fCB3c2C12FBEa0a54";
@@ -37,11 +43,12 @@ describe.only("Challenge to run as mainnet fork", () => {
    */
   // https://alchemix-finance.gitbook.io/user-docs/contracts
   const alchemistAddress = "0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd";
+  // https://etherscan.io/address/0x78537a6ceba16f412e123a90472c6e0e9a8f1132#readContract
+  const whitelistAddress = "0x78537a6ceba16f412e123a90472c6e0e9a8f1132";
   const yDAI = "0x5951f159eF502f0571A5D7e136a580DcadEa42Eb";
   const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
   before(async () => {
-    console.log('------- EJECUTANDO ESTO ------');
     const nftOwner = "0x271c7603AAf2BD8F68e8Ca60f4A4F22c4920259f";
     await network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -58,24 +65,40 @@ describe.only("Challenge to run as mainnet fork", () => {
       impersonatedSigner
     );
 
+    whitelistContract = IWhitelist__factory.connect(
+      whitelistAddress,
+      impersonatedOwner
+    );
+
     const AlchemistJPEG = await ethers.getContractFactory("AlchemistJPEG");
     alchemistNFTVault = (await AlchemistJPEG.deploy()) as AlchemistJPEG;
     await alchemistNFTVault.deployed();
-    console.log('ALCHEMIST NFT VAULT DEPLOYED');
-    console.log(alchemistNFTVault.address);
+
+    const NFTWrapper = await ethers.getContractFactory("NFT")
+
   });
 
   describe("Do steps off chain", () => {
-    it("check the Bored Ape", async () => {
+    xit("check the Bored Ape", async () => {
       const owner = await nftContract.ownerOf(nftId);
       const address = await impersonatedSigner.getAddress();
-      console.log("owner", owner);
+
+      /* await alchemistNFTVault.initialize(
+        alchemistAddress,
+        BAYCNFTVault,
+        pUSD,
+        owner.address,
+        [
+        ]
+      );
+      */
+      
       expect(address).eql(owner);
     });
 
     xit("lockNFT", async () => {
-      //APPROVE NFT COLLECTION TO CONTRACT
-      //await nftContract.approve(
+      // APPROVE NFT COLLECTION TO CONTRACT
+      // await nftContract.approve(
     });
 
     xit("UnlockNFT", async () => {});

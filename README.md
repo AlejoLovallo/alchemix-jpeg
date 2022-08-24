@@ -41,7 +41,7 @@ This integration works quite similar to the previous one. The main difference is
 ### Implementation
 
 * [AlchemistJPEG](./contracts/AlchemistNFT.sol)
-* [AlchemistDrops](./contracts/)
+* [AlchemistDrops](./contracts/challenge/AlchemicDropsNft.sol)
 
 ## ToDo
 - [x] JPEGd integration design

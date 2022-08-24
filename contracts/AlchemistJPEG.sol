@@ -50,6 +50,8 @@ contract AlchemistJPEG is Initializable, IAlchemistNFT, IERC721Receiver{
     /// @notice user to nft collection to account data
     mapping(address => mapping(address => Account)) private users;
 
+    constructor(){}
+
     /// @dev Only initialize contract
     ///
     ///
