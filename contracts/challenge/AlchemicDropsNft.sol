@@ -116,23 +116,21 @@ contract AlchemicDropsNFT is Initializable, IERC721Receiver{
         // TODO add getCash check
         errorCode = dropsUsdcMarket.borrow(amountToBorrow);
         require(errorCode == 0, "Drops Comptroller borrow error");
-
-        Usdc.transfer(msg.sender, amountToBorrow);
         
 
         // INTERACTION WITH ALCHEMISTV2 VAULT
         uint256 shares = Alchemist.depositUnderlying(
             usdcYieldToken,
             amountToBorrow,
-            msg.sender,
+             msg.sender,
             1 // TODO use a setter and calculate this 
         );
 
         //MINT allUSD
         // 50% of maximum shares TODO add it as a parameter for the user
-        Alchemist.mintFrom(msg.sender, shares / 2, msg.sender);
+        Alchemist.mint(shares / 2, msg.sender);
 
-        // TODO keep track of the shares and user
+        // TODO keep track of the shares and users
 
         return shares;
     }  
