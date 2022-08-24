@@ -15,11 +15,12 @@ import {
   AlchemicDropsNFT,
   IWhitelist,
 } from "../typechain";
-import { parseEther, parseUnits } from "ethers/lib/utils";
+import { parseUnits } from "ethers/lib/utils";
 
 describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
   let impersonatedSigner: SignerWithAddress;
   let impersonatedOwner: SignerWithAddress;
+  let impersonatedUsdcCow: SignerWithAddress;
   let nftContract: IERC721Metadata;
   let usdcContract: IERC20Minimal;
   let debtTokenContract: IERC20Minimal;
@@ -51,6 +52,7 @@ describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
     // owner of https://opensea.io/assets/ethereum/0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d/3105
     const nftHolder = "0xe89552758DEcfa70f60611413a848055842289fD";
     const whitelistOwner = "0x9e2b6378ee8ad2a4a95fe481d63caba8fb0ebbf9";
+    const usdcCow = "0x738cf6903e6c4e699d1c2dd9ab8b67fcdb3121ea"
     // https://hardhat.org/hardhat-network/docs/guides/forking-other-networks#impersonating-accounts
     await network.provider.request({
       method: "hardhat_impersonateAccount",
@@ -62,6 +64,11 @@ describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
       params: [whitelistOwner],
     });
     impersonatedOwner = await ethers.getSigner(whitelistOwner);
+    await network.provider.request({
+      method: "hardhat_impersonateAccount",
+      params: [usdcCow],
+    });
+    impersonatedUsdcCow = await ethers.getSigner(usdcCow);
     nftContract = IERC721Metadata__factory.connect(
       baycAddress,
       impersonatedSigner
@@ -89,7 +96,7 @@ describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
   });
 
   describe("Do steps on chain", () => {
-    it("check the Bored Ape", async () => {
+    it("should lock the NFT and borrow alUSD", async () => {
       const dropsFactory = await ethers.getContractFactory("AlchemicDropsNFT");
       let alchemicDropsNFT = (await dropsFactory.deploy()) as AlchemicDropsNFT;
       const [owner] = await ethers.getSigners();
@@ -127,7 +134,7 @@ describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
         borrowAmount,
         dropsCErc721
       );
-      const ownerOfNft = await nftContract.ownerOf(nftId);
+      let ownerOfNft = await nftContract.ownerOf(nftId);
       expect(dropsCErc721).eql(ownerOfNft);
 
       const { debt } = await alchemistContract.accounts(
@@ -141,6 +148,20 @@ describe.only("Challenge borrow Drops NFT run as mainnet fork", () => {
       );
       console.log("debt token balance", (await balance).toString());
       expect(balance).gt(0);
+
+      // // Now should unlock it
+      // await usdcContract
+      //   .connect(impersonatedUsdcCow)
+      //   .transfer(impersonatedSigner.address, parseUnits("10", 6));
+
+      // await usdcContract.approve(
+      //   alchemicDropsNFT.address,
+      //   ethers.constants.MaxUint256
+      // );
+
+      // await alchemicDropsNFT.unlockNFT(baycAddress, nftId, dropsCErc721);
+      // ownerOfNft = await nftContract.ownerOf(nftId);
+      // expect(impersonatedSigner.address).eql(ownerOfNft);
     });
   });
   describe.skip("Do steps off chain", () => {
